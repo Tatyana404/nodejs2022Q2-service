@@ -13,7 +13,5 @@ import { UsersModule } from './modules/users/users.module';
     TracksModule,
     UsersModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}
