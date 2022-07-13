@@ -1,3 +1,4 @@
+import { InMemoryDB } from './../../../db/inMemoryDB';
 import {
   BadRequestException,
   HttpStatus,
@@ -11,14 +12,12 @@ import { Artist } from './../../../types/artists.interface';
 
 @Injectable()
 export class ArtistsService {
-  private static artists: Artist[] = [];
-
   async getArtists(): Promise<Artist[]> {
-    return ArtistsService.artists;
+    return InMemoryDB.artists;
   }
 
   async getArtist(artistId: string): Promise<Artist> {
-    const artist = ArtistsService.artists.find(({ id }) => id === artistId);
+    const artist = InMemoryDB.artists.find(({ id }) => id === artistId);
 
     if (!uuidValidate(artistId)) {
       throw new BadRequestException(
@@ -48,7 +47,7 @@ export class ArtistsService {
       );
     }
 
-    ArtistsService.artists.push(newArtist);
+    InMemoryDB.artists.push(newArtist);
 
     return newArtist;
   }
@@ -58,7 +57,7 @@ export class ArtistsService {
     updateArtistDto: UpdateArtistDto,
   ): Promise<Artist> {
     const updateArtist: Artist = { ...updateArtistDto, id: artistId };
-    const index = ArtistsService.artists.findIndex(({ id }) => id === artistId);
+    const index = InMemoryDB.artists.findIndex(({ id }) => id === artistId);
 
     if (!uuidValidate(artistId)) {
       throw new BadRequestException(
@@ -71,13 +70,13 @@ export class ArtistsService {
       throw new NotFoundException(HttpStatus.NOT_FOUND, 'Artist not found');
     }
 
-    ArtistsService.artists[index] = updateArtist;
+    InMemoryDB.artists[index] = updateArtist;
 
     return updateArtist;
   }
 
   async deleteArtist(artistId: string): Promise<any> {
-    const index = ArtistsService.artists.findIndex(({ id }) => id === artistId);
+    const index = InMemoryDB.artists.findIndex(({ id }) => id === artistId);
 
     if (!uuidValidate(artistId)) {
       throw new BadRequestException(
@@ -90,8 +89,6 @@ export class ArtistsService {
       throw new NotFoundException(HttpStatus.NOT_FOUND, 'Artist not found');
     }
 
-    ArtistsService.artists = ArtistsService.artists.filter(
-      ({ id }) => id !== artistId,
-    );
+    InMemoryDB.artists = InMemoryDB.artists.filter(({ id }) => id !== artistId);
   }
 }
