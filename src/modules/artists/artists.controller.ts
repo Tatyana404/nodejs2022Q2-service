@@ -1,4 +1,3 @@
-import { UpdateArtistDto } from './dto/update-artist.dto';
 import {
   Body,
   Controller,
@@ -12,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ArtistsService } from './services/artists.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
+import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './../../types/artists.interface';
 
 @Controller('artist')
@@ -40,14 +40,14 @@ export class ArtistsController {
   @HttpCode(HttpStatus.OK)
   updateArtist(
     @Param('id') id: string,
-    @Body() updateTrackDto: UpdateArtistDto,
+    @Body() updateArtistDto: UpdateArtistDto,
   ): Promise<Artist> {
-    return this.artistsService.updateArtist(id, updateTrackDto);
+    return this.artistsService.updateArtist(id, updateArtistDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteArtist(@Param('id') id: string): Promise<any> {
+  deleteArtist(@Param('id') id: string): Promise<void> {
     return this.artistsService.deleteArtist(id);
   }
 }
