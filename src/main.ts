@@ -19,7 +19,9 @@ const bootstrap = async () => {
 
   SwaggerModule.setup('doc', app, parse(DOC_API));
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+  );
 
   await app.listen(PORT, () => console.log(`🚀  Server ready on port ${PORT}`));
 };
