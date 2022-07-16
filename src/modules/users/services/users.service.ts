@@ -1,8 +1,8 @@
 import {
-  Injectable,
   BadRequestException,
-  NotFoundException,
   ForbiddenException,
+  NotFoundException,
+  Injectable,
 } from '@nestjs/common';
 import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
 import { User, UserResponse } from './../../../types/users.interface';
@@ -12,8 +12,10 @@ import { InMemoryDB } from './../../../db/inMemoryDB';
 
 @Injectable()
 export class UsersService {
+  constructor(private inMemoryDB: InMemoryDB) {}
+
   async getUsers(): Promise<UserResponse[]> {
-    return InMemoryDB.users.map((user: User) => ({
+    return this.inMemoryDB.users.map((user: User) => ({
       id: user.id,
       login: user.login,
       version: user.version,
@@ -23,22 +25,31 @@ export class UsersService {
   }
 
   async getUser(userId: string): Promise<UserResponse> {
-    const user: User = InMemoryDB.users.find(({ id }) => id === userId);
-
     if (!uuidValidate(userId)) {
-      throw new BadRequestException('User id invalid');
+      throw new BadRequestException(`User id ${userId} invalid`);
     }
 
+    const user: User = this.inMemoryDB.users.find(
+      ({ id }: { id: string }) => id === userId,
+    );
+
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(`User ${userId} not found`);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...rest } = user;
+
     return rest;
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<UserResponse> {
+    if (
+      !['login', 'password'].every((field: string) => field in createUserDto)
+    ) {
+      throw new BadRequestException('Body does not contain required fields');
+    }
+
     const newUser: User = {
       ...createUserDto,
       version: 1,
@@ -46,16 +57,12 @@ export class UsersService {
       updatedAt: Date.now(),
       id: uuidv4(),
     };
-    const fields: string[] = ['login', 'password'];
 
-    if (!fields.every((field: string) => field in createUserDto)) {
-      throw new BadRequestException('Body does not contain required fields');
-    }
-
-    InMemoryDB.users.push(newUser);
+    this.inMemoryDB.users.push(newUser);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...rest } = newUser;
+
     return rest;
   }
 
@@ -63,16 +70,21 @@ export class UsersService {
     userId: string,
     updatePasswordDto: UpdatePasswordDto,
   ): Promise<UserResponse> {
-    const user: User = InMemoryDB.users.find(({ id }) => id === userId);
-    const index: number = InMemoryDB.users.findIndex(({ id }) => id === userId);
-
     if (!uuidValidate(userId)) {
-      throw new BadRequestException('User id invalid');
+      throw new BadRequestException(`User id ${userId} invalid`);
     }
 
-    if (!user) {
-      throw new NotFoundException('User not found');
+    const index: number = this.inMemoryDB.users.findIndex(
+      ({ id }: { id: string }) => id === userId,
+    );
+
+    if (index === -1) {
+      throw new NotFoundException(`User ${userId} not found`);
     }
+
+    const user: User = this.inMemoryDB.users.find(
+      ({ id }: { id: string }) => id === userId,
+    );
 
     if (user.password !== updatePasswordDto.oldPassword) {
       throw new ForbiddenException('Old password is not correct');
@@ -82,24 +94,27 @@ export class UsersService {
     user.version = ++user.version;
     user.updatedAt = Date.now();
 
-    InMemoryDB.users[index] = user;
+    this.inMemoryDB.users[index] = user;
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...rest } = user;
+
     return rest;
   }
 
   async deleteUser(userId: string): Promise<void> {
-    const index: number = InMemoryDB.users.findIndex(({ id }) => id === userId);
-
     if (!uuidValidate(userId)) {
-      throw new BadRequestException('User id invalid');
+      throw new BadRequestException(`User id ${userId} invalid`);
     }
 
-    if (index === -1) {
-      throw new NotFoundException('User not found');
+    if (
+      !this.inMemoryDB.users.find(({ id }: { id: string }) => id === userId)
+    ) {
+      throw new NotFoundException(`User ${userId} not found`);
     }
 
-    InMemoryDB.users = InMemoryDB.users.filter(({ id }) => id !== userId);
+    this.inMemoryDB.users = this.inMemoryDB.users.filter(
+      ({ id }: { id: string }) => id !== userId,
+    );
   }
 }

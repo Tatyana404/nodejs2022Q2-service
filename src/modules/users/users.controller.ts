@@ -1,12 +1,12 @@
 import {
-  Body,
   Controller,
-  Delete,
-  Get,
-  HttpCode,
   HttpStatus,
+  HttpCode,
+  Delete,
   Param,
+  Body,
   Post,
+  Get,
   Put,
 } from '@nestjs/common';
 import { UserResponse } from './../../types/users.interface';
