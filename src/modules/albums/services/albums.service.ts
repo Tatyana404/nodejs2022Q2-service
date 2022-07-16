@@ -9,6 +9,7 @@ import { CreateAlbumDto } from './../dto/create-album.dto';
 import { UpdateAlbumDto } from './../dto/update-album.dto';
 import { Album } from './../../../types/albums.interface';
 import { InMemoryDB } from './../../../db/inMemoryDB';
+
 @Injectable()
 export class AlbumsService {
   constructor(private inMemoryDB: InMemoryDB) {}

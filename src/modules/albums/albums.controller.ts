@@ -47,7 +47,7 @@ export class AlbumsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteArtist(@Param('id') id: string): Promise<void> {
+  deleteAlbum(@Param('id') id: string): Promise<void> {
     return this.albumsService.deleteAlbum(id);
   }
 }
