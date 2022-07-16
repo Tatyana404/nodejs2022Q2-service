@@ -1,48 +1,51 @@
 import {
   BadRequestException,
-  Injectable,
   NotFoundException,
+  Injectable,
 } from '@nestjs/common';
 import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
 import { UpdateArtistDto } from './../dto/update-artist.dto';
 import { CreateArtistDto } from './../dto/create-artist.dto';
 import { Artist } from './../../../types/artists.interface';
-import { Album } from './../../../types/albums.interface';
-import { Track } from './../../../types/tracks.interface';
 import { InMemoryDB } from './../../../db/inMemoryDB';
 
 @Injectable()
 export class ArtistsService {
+  constructor(private inMemoryDB: InMemoryDB) {}
+
   async getArtists(): Promise<Artist[]> {
-    return InMemoryDB.artists;
+    return this.inMemoryDB.artists;
   }
 
   async getArtist(artistId: string): Promise<Artist> {
-    const artist: Artist = InMemoryDB.artists.find(({ id }) => id === artistId);
-
     if (!uuidValidate(artistId)) {
-      throw new BadRequestException('Artist id invalid');
+      throw new BadRequestException(`Artist id ${artistId} invalid`);
     }
 
+    const artist: Artist = this.inMemoryDB.artists.find(
+      ({ id }: { id: string }) => id === artistId,
+    );
+
     if (!artist) {
-      throw new NotFoundException('Artist not found');
+      throw new NotFoundException(`Artist ${artistId} not found`);
     }
 
     return artist;
   }
 
   async createArtist(createArtistDto: CreateArtistDto): Promise<Artist> {
+    if (
+      !['name', 'grammy'].every((field: string) => field in createArtistDto)
+    ) {
+      throw new BadRequestException('Body does not contain required fields');
+    }
+
     const newArtist: Artist = {
       ...createArtistDto,
       id: uuidv4(),
     };
-    const fields: string[] = ['name', 'grammy'];
 
-    if (!fields.every((field: string) => field in createArtistDto)) {
-      throw new BadRequestException('Body does not contain required fields');
-    }
-
-    InMemoryDB.artists.push(newArtist);
+    this.inMemoryDB.artists.push(newArtist);
 
     return newArtist;
   }
@@ -51,58 +54,65 @@ export class ArtistsService {
     artistId: string,
     updateArtistDto: UpdateArtistDto,
   ): Promise<Artist> {
-    const updateArtist: Artist = { ...updateArtistDto, id: artistId };
-    const index: number = InMemoryDB.artists.findIndex(
-      ({ id }) => id === artistId,
+    if (!uuidValidate(artistId)) {
+      throw new BadRequestException(`Artist id ${artistId} invalid`);
+    }
+
+    const index: number = this.inMemoryDB.artists.findIndex(
+      ({ id }: { id: string }) => id === artistId,
     );
 
-    if (!uuidValidate(artistId)) {
-      throw new BadRequestException('Artist id invalid');
-    }
-
     if (index === -1) {
-      throw new NotFoundException('Artist not found');
+      throw new NotFoundException(`Artist ${artistId} not found`);
     }
 
-    InMemoryDB.artists[index] = updateArtist;
+    const updateArtist: Artist = { ...updateArtistDto, id: artistId };
+
+    this.inMemoryDB.artists[index] = updateArtist;
 
     return updateArtist;
   }
 
   async deleteArtist(artistId: string): Promise<void> {
-    const artist: Artist = InMemoryDB.artists.find(({ id }) => id === artistId);
-    const artistInFavorites: number = InMemoryDB.favorites.artists.findIndex(
-      (id) => id === artistId,
-    );
-    const artistInAlbums: Album = InMemoryDB.albums.find(
-      ({ id }) => id === artistId,
-    );
-    const artistInTracks: Track = InMemoryDB.tracks.find(
-      ({ id }) => id === artistId,
-    );
-
     if (!uuidValidate(artistId)) {
-      throw new BadRequestException('Artist id invalid');
+      throw new BadRequestException(`Artist id ${artistId} invalid`);
     }
 
-    if (!artist) {
-      throw new NotFoundException('Artist not found');
+    if (
+      !this.inMemoryDB.artists.find(({ id }: { id: string }) => id === artistId)
+    ) {
+      throw new NotFoundException(`Artist ${artistId} not found`);
     }
 
-    if (artistInFavorites !== -1) {
-      InMemoryDB.favorites.artists = InMemoryDB.favorites.artists.filter(
-        (id) => id !== artistId,
-      );
+    this.inMemoryDB.artists = this.inMemoryDB.artists.filter(
+      ({ id }: { id: string }) => id !== artistId,
+    );
+
+    if (
+      this.inMemoryDB.favorites.artists.findIndex(
+        (id: string) => id === artistId,
+      ) !== -1
+    ) {
+      this.inMemoryDB.favorites.artists =
+        this.inMemoryDB.favorites.artists.filter(
+          (id: string) => id !== artistId,
+        );
     }
 
-    if (artistInAlbums) {
-      artistInAlbums.artistId = null;
+    const artistInAlbums: number = this.inMemoryDB.albums.findIndex(
+      ({ artistId: id }: { artistId: string }) => id === artistId,
+    );
+
+    if (artistInAlbums !== -1) {
+      this.inMemoryDB.albums[artistInAlbums].artistId = null;
     }
 
-    if (artistInTracks) {
-      artistInTracks.artistId = null;
-    }
+    const artistInTracks: number = this.inMemoryDB.tracks.findIndex(
+      ({ artistId: id }: { artistId: string }) => id === artistId,
+    );
 
-    InMemoryDB.artists = InMemoryDB.artists.filter(({ id }) => id !== artistId);
+    if (artistInTracks !== -1) {
+      this.inMemoryDB.tracks[artistInTracks].artistId = null;
+    }
   }
 }
