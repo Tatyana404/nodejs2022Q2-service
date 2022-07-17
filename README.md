@@ -18,67 +18,67 @@
 
 ## Users
 
-GET /user - get all users;
-GET /user/:id - get single user by id;
-POST /user - create user:
+* GET /user - get all users;
+* GET /user/:id - get single user by id;
+* POST /user - create user:
 {
   login: string;
   password: string
 }; 
-PUT /user/:id - update user's password:
+* PUT /user/:id - update user's password:
 {
   oldPassowrd: string;
   newPassword: string;
 };
-DELETE /user/:id - delete user;
+* DELETE /user/:id - delete user;
 
 ## Tracks
 
-GET /track - get all tracks;
-GET /track/:id - get single track by id;
-POST /track - create new track:
+* GET /track - get all tracks;
+* GET /track/:id - get single track by id;
+* POST /track - create new track:
 {
   name: string;
   artistId: string | null;
   albumId: string | null;
   duration: number;
 };
-PUT /track/:id - update track info, accepts the same fields object as when created;
-DELETE /track/:id - delete track;
+* PUT /track/:id - update track info, accepts the same fields object as when created;
+* DELETE /track/:id - delete track;
 
 ## Artists
 
-GET /artist - get all artists;
-GET /artist/:id - get single artist by id;
-POST /artist - create new artist:
+* GET /artist - get all artists;
+* GET /artist/:id - get single artist by id;
+* POST /artist - create new artist:
 {
   name: string;
   grammy: boolean;
 };
-PUT /artist/:id - update artist info, accepts the same fields object as when created;
-DELETE /artist/:id - delete album;
+* PUT /artist/:id - update artist info, accepts the same fields object as when created;
+* DELETE /artist/:id - delete album;
 
 ## Albums
 
-GET /album - get all albums
-GET /album/:id - get single album by id
-POST /album - create new album:
+* GET /album - get all albums
+* GET /album/:id - get single album by id
+* POST /album - create new album:
 {
   name: string;
   year: number;
   artistId: string | null;
 };
-PUT /album/:id - update album info, accepts the same fields object as when created;
-DELETE /album/:id - delete album
+* PUT /album/:id - update album info, accepts the same fields object as when created;
+* DELETE /album/:id - delete album
 
 ## Favorites
 
-GET /favs - get all favorites
-POST /favs/track/:id - add track to the favorites
-DELETE /favs/track/:id - delete track from favorites
-POST /favs/album/:id - add album to the favorites
-DELETE /favs/album/:id - delete album from favorites
-POST /favs/artist/:id - add artist to the favorites
+* GET /favs - get all favorites
+* POST /favs/track/:id - add track to the favorites
+* DELETE /favs/track/:id - delete track from favorites
+* POST /favs/album/:id - add album to the favorites
+* DELETE /favs/album/:id - delete album from favorites
+* POST /favs/artist/:id - add artist to the favorites
 
 ## Prerequisites
 
