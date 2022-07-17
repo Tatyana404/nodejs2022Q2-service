@@ -7,10 +7,10 @@ import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
-    AlbumsModule,
-    ArtistsModule,
     FavoritesModule,
+    ArtistsModule,
     TracksModule,
+    AlbumsModule,
     UsersModule,
   ],
 })
