@@ -18,7 +18,10 @@
     "test:auth": "cross-env TEST_MODE=auth jest --config ./test/jest-e2e.json",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "scan:app": "docker scan nodejs2022q2-service_app",
+    "scan:postgres": "docker scan nodejs2022q2-service_postgres",
+    "scan:images": "concurrently \"npm run scan:app\" \"npm run scan:postgres\""
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
@@ -52,6 +55,7 @@
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
+    "concurrently": "^7.3.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
@@ -67,13 +71,19 @@
     "typescript": "^4.3.5"
   },
   "jest": {
-    "moduleFileExtensions": ["js", "json", "ts"],
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
-    "collectCoverageFrom": ["**/*.(t|j)s"],
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   }
