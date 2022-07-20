@@ -2,17 +2,15 @@
 
 1. run "git pull git@github.com:Tatyana404/nodejs2022Q2-service.git" and then open this repository;
 
-2. run "git checkout service";
+2. run "git checkout containerization-docker";
 
 3. rename .env.example to .env;
 
 4. run "npm install";
 
-5. run "npm run start" to launch the application, then open localhost:4000/doc in the browser;
+5. run "docker compose up" to launch the application, then open localhost:4000/doc in the browser;
 
-6. run "npm run lint" to check the application for syntax errors;
-
-7. run "npm run test" to run all tests or "npm run test -- /test/${fileName}.e2e-spec.ts" to run one unit of tests;
+6. run "npm run scan:images" to check vulnerabilities in images (command may take several minutes to complete);
 
 > The following requests are available in the application:
 
