@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    restart: always
+    restart: unless-stopped
     container_name: nestjs-rest-app
     env_file: .env
     depends_on:
@@ -21,7 +21,7 @@ services:
     build: 
       context: .
       dockerfile: ./src/db/Dockerfile
-    restart: always
+    restart: unless-stopped
     env_file: .env
     container_name: nestjs-rest-postgres
     environment:
@@ -36,7 +36,6 @@ services:
     command: postgres -c logging_collector=on
     volumes:
       - nestjs-rest-postgres:${PGDATA}
-      - nestjs-rest-logs:${PGLOGS}
 
 networks:
   network-nestjs-rest:
@@ -45,4 +44,3 @@ networks:
 
 volumes:
   nestjs-rest-postgres:
-  nestjs-rest-logs:
