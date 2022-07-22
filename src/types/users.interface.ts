@@ -1,4 +1,4 @@
-export interface User {
+export interface IUser {
   id: string;
   login: string;
   password: string;
@@ -11,8 +11,8 @@ export interface UserResponse {
   id: string;
   login: string;
   version: number;
-  createdAt: number;
-  updatedAt: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface CreateUserDto {

@@ -4,24 +4,35 @@ import {
   NotFoundException,
   Injectable,
 } from '@nestjs/common';
-import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
-import { User, UserResponse } from './../../../types/users.interface';
+import { validate as uuidValidate } from 'uuid';
+import { User } from '@prisma/client';
+import * as argon from 'argon2';
+import { UserResponse } from './../../../types/users.interface';
+import { PrismaService } from '../../prisma/prisma.service';
 import { UpdatePasswordDto } from './../dto/update-user.dto';
 import { CreateUserDto } from './../dto/create-user.dto';
-import { InMemoryDB } from './../../../db/inMemoryDB';
 
 @Injectable()
 export class UsersService {
-  constructor(private inMemoryDB: InMemoryDB) {}
+  constructor(private prisma: PrismaService) {}
 
   async getUsers(): Promise<UserResponse[]> {
-    return this.inMemoryDB.users.map((user: User) => ({
-      id: user.id,
-      login: user.login,
-      version: user.version,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    }));
+    const users: UserResponse[] = await this.prisma.user.findMany({
+      select: {
+        id: true,
+        login: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    for (const user of users) {
+      user.createdAt = new Date(user.createdAt).getTime() as any;
+      user.updatedAt = new Date(user.updatedAt).getTime() as any;
+    }
+
+    return users;
   }
 
   async getUser(userId: string): Promise<UserResponse> {
@@ -29,18 +40,21 @@ export class UsersService {
       throw new BadRequestException(`User id ${userId} invalid`);
     }
 
-    const user: User = this.inMemoryDB.users.find(
-      ({ id }: { id: string }) => id === userId,
-    );
+    const user: User = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
 
     if (!user) {
       throw new NotFoundException(`User ${userId} not found`);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...rest } = user;
+    user.createdAt = new Date(user.createdAt).getTime() as any;
+    user.updatedAt = new Date(user.updatedAt).getTime() as any;
+    delete user.password;
 
-    return rest;
+    return user;
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<UserResponse> {
@@ -50,20 +64,18 @@ export class UsersService {
       throw new BadRequestException('Body does not contain required fields');
     }
 
-    const newUser: User = {
-      ...createUserDto,
-      version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      id: uuidv4(),
-    };
+    const newUser: User = await this.prisma.user.create({
+      data: {
+        login: createUserDto.login,
+        password: await argon.hash(createUserDto.password),
+      },
+    });
 
-    this.inMemoryDB.users.push(newUser);
+    newUser.createdAt = new Date(newUser.createdAt).getTime() as any;
+    newUser.updatedAt = new Date(newUser.updatedAt).getTime() as any;
+    delete newUser.password;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...rest } = newUser;
-
-    return rest;
+    return newUser;
   }
 
   async updateUser(
@@ -74,32 +86,38 @@ export class UsersService {
       throw new BadRequestException(`User id ${userId} invalid`);
     }
 
-    const index: number = this.inMemoryDB.users.findIndex(
-      ({ id }: { id: string }) => id === userId,
-    );
+    const user: User = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
 
-    if (index === -1) {
+    if (!user) {
       throw new NotFoundException(`User ${userId} not found`);
     }
 
-    const user: User = this.inMemoryDB.users.find(
-      ({ id }: { id: string }) => id === userId,
-    );
-
-    if (user.password !== updatePasswordDto.oldPassword) {
+    if (!(await argon.verify(user.password, updatePasswordDto.oldPassword))) {
       throw new ForbiddenException('Old password is not correct');
     }
 
-    user.password = updatePasswordDto.newPassword;
-    user.version = ++user.version;
-    user.updatedAt = Date.now();
+    const updateUser: User = await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        version: {
+          increment: 1,
+        },
+        password: await argon.hash(updatePasswordDto.newPassword),
+        updatedAt: new Date().toISOString(),
+      },
+    });
 
-    this.inMemoryDB.users[index] = user;
+    updateUser.createdAt = new Date(updateUser.createdAt).getTime() as any;
+    updateUser.updatedAt = new Date(updateUser.updatedAt).getTime() as any;
+    delete updateUser.password;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...rest } = user;
-
-    return rest;
+    return updateUser;
   }
 
   async deleteUser(userId: string): Promise<void> {
@@ -107,14 +125,14 @@ export class UsersService {
       throw new BadRequestException(`User id ${userId} invalid`);
     }
 
-    if (
-      !this.inMemoryDB.users.find(({ id }: { id: string }) => id === userId)
-    ) {
+    if (!(await this.prisma.user.findUnique({ where: { id: userId } }))) {
       throw new NotFoundException(`User ${userId} not found`);
     }
 
-    this.inMemoryDB.users = this.inMemoryDB.users.filter(
-      ({ id }: { id: string }) => id !== userId,
-    );
+    await this.prisma.user.delete({
+      where: {
+        id: userId,
+      },
+    });
   }
 }

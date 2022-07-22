@@ -4,7 +4,7 @@ import { Database } from './../types/inMemoryDB.interface';
 import { Artist } from './../types/artists.interface';
 import { Track } from './../types/tracks.interface';
 import { Album } from './../types/albums.interface';
-import { User } from './../types/users.interface';
+import { IUser } from './../types/users.interface';
 
 @Injectable()
 export class InMemoryDB {
@@ -16,7 +16,7 @@ export class InMemoryDB {
   artists: Artist[] = [];
   albums: Album[] = [];
   tracks: Track[] = [];
-  users: User[] = [];
+  users: IUser[] = [];
 
   private static instance: Database;
 
