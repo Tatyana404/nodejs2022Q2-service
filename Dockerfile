@@ -10,6 +10,9 @@ COPY . .
 
 COPY .env.example .env
 
+RUN npm run build && npx prisma generate
+
 CMD ["npm", "run", "start:dev"]
+
 
 

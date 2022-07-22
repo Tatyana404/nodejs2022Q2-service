@@ -3,6 +3,7 @@ import { FavoritesModule } from './modules/favorites/favorites.module';
 import { ArtistsModule } from './modules/artists/artists.module';
 import { TracksModule } from './modules/tracks/tracks.module';
 import { AlbumsModule } from './modules/albums/albums.module';
+import { PrismaModule } from './modules/prisma/prisma.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -12,6 +13,7 @@ import { UsersModule } from './modules/users/users.module';
     TracksModule,
     AlbumsModule,
     UsersModule,
+    PrismaModule,
   ],
 })
 export class AppModule {}
