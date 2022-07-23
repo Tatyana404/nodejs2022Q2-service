@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Favorites } from './../types/favorites.interface';
 import { Database } from './../types/inMemoryDB.interface';
-import { Artist } from './../types/artists.interface';
+import { Artist } from '@prisma/client';
 import { Track } from '@prisma/client';
 import { Album } from './../types/albums.interface';
 import { User } from '@prisma/client';

@@ -9,10 +9,10 @@ import {
   Get,
   Put,
 } from '@nestjs/common';
+import { Artist } from '@prisma/client';
 import { ArtistsService } from './services/artists.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { Artist } from './../../types/artists.interface';
 
 @Controller('artist')
 export class ArtistsController {

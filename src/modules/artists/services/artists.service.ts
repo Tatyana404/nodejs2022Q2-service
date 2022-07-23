@@ -3,18 +3,18 @@ import {
   NotFoundException,
   Injectable,
 } from '@nestjs/common';
-import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
+import { validate as uuidValidate } from 'uuid';
+import { Artist } from '@prisma/client';
+import { PrismaService } from '../../prisma/prisma.service';
 import { UpdateArtistDto } from './../dto/update-artist.dto';
 import { CreateArtistDto } from './../dto/create-artist.dto';
-import { Artist } from './../../../types/artists.interface';
-import { InMemoryDB } from './../../../db/inMemoryDB';
 
 @Injectable()
 export class ArtistsService {
-  constructor(private inMemoryDB: InMemoryDB) {}
+  constructor(private prisma: PrismaService) {}
 
   async getArtists(): Promise<Artist[]> {
-    return this.inMemoryDB.artists;
+    return await this.prisma.artist.findMany();
   }
 
   async getArtist(artistId: string): Promise<Artist> {
@@ -22,9 +22,11 @@ export class ArtistsService {
       throw new BadRequestException(`Artist id ${artistId} invalid`);
     }
 
-    const artist: Artist = this.inMemoryDB.artists.find(
-      ({ id }: { id: string }) => id === artistId,
-    );
+    const artist: Artist = await this.prisma.artist.findUnique({
+      where: {
+        id: artistId,
+      },
+    });
 
     if (!artist) {
       throw new NotFoundException(`Artist ${artistId} not found`);
@@ -40,12 +42,9 @@ export class ArtistsService {
       throw new BadRequestException('Body does not contain required fields');
     }
 
-    const newArtist: Artist = {
-      ...createArtistDto,
-      id: uuidv4(),
-    };
-
-    this.inMemoryDB.artists.push(newArtist);
+    const newArtist: Artist = await this.prisma.artist.create({
+      data: { ...createArtistDto },
+    });
 
     return newArtist;
   }
@@ -58,17 +57,22 @@ export class ArtistsService {
       throw new BadRequestException(`Artist id ${artistId} invalid`);
     }
 
-    const index: number = this.inMemoryDB.artists.findIndex(
-      ({ id }: { id: string }) => id === artistId,
-    );
+    const artist: Artist = await this.prisma.artist.findUnique({
+      where: {
+        id: artistId,
+      },
+    });
 
-    if (index === -1) {
+    if (!artist) {
       throw new NotFoundException(`Artist ${artistId} not found`);
     }
 
-    const updateArtist: Artist = { ...updateArtistDto, id: artistId };
-
-    this.inMemoryDB.artists[index] = updateArtist;
+    const updateArtist: Artist = await this.prisma.artist.update({
+      where: {
+        id: artistId,
+      },
+      data: { ...updateArtistDto },
+    });
 
     return updateArtist;
   }
@@ -78,41 +82,59 @@ export class ArtistsService {
       throw new BadRequestException(`Artist id ${artistId} invalid`);
     }
 
-    if (
-      !this.inMemoryDB.artists.find(({ id }: { id: string }) => id === artistId)
-    ) {
-      throw new NotFoundException(`Artist ${artistId} not found`);
+    if (!(await this.prisma.artist.findUnique({ where: { id: artistId } }))) {
+      throw new NotFoundException(`Track ${artistId} not found`);
     }
 
-    this.inMemoryDB.artists = this.inMemoryDB.artists.filter(
-      ({ id }: { id: string }) => id !== artistId,
-    );
+    await this.prisma.artist.delete({
+      where: {
+        id: artistId,
+      },
+    });
 
-    if (
-      this.inMemoryDB.favorites.artists.findIndex(
-        (id: string) => id === artistId,
-      ) !== -1
-    ) {
-      this.inMemoryDB.favorites.artists =
-        this.inMemoryDB.favorites.artists.filter(
-          (id: string) => id !== artistId,
-        );
-    }
+    //   if (
+    //     this.inMemoryDB.favorites.artists.findIndex(
+    //       (id: string) => id === artistId,
+    //     ) !== -1
+    //   ) {
+    //     this.inMemoryDB.favorites.artists =
+    //       this.inMemoryDB.favorites.artists.filter(
+    //         (id: string) => id !== artistId,
+    //       );
+    //   }
 
-    const artistInAlbums: number = this.inMemoryDB.albums.findIndex(
-      ({ artistId: id }: { artistId: string }) => id === artistId,
-    );
+    // if (
+    //   await this.prisma.album.findMany({
+    //     where: {
+    //       artistId,
+    //     },
+    //   })
+    // ) {
+    //   await this.prisma.album.updateMany({
+    //     where: {
+    //       id: artistId,
+    //     },
+    //     data: {
+    //       artistId: { set: null },
+    //     },
+    //   });
+    // }
 
-    if (artistInAlbums !== -1) {
-      this.inMemoryDB.albums[artistInAlbums].artistId = null;
-    }
-
-    const artistInTracks: number = this.inMemoryDB.tracks.findIndex(
-      ({ artistId: id }: { artistId: string }) => id === artistId,
-    );
-
-    if (artistInTracks !== -1) {
-      this.inMemoryDB.tracks[artistInTracks].artistId = null;
-    }
+    // if (
+    //   await this.prisma.track.findMany({
+    //     where: {
+    //       artistId,
+    //     },
+    //   })
+    // ) {
+    //   await this.prisma.track.updateMany({
+    //     where: {
+    //       id: artistId,
+    //     },
+    //     data: {
+    //       artistId: { set: null },
+    //     },
+    //   });
+    // }
   }
 }
