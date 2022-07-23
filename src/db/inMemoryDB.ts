@@ -4,7 +4,7 @@ import { Database } from './../types/inMemoryDB.interface';
 import { Artist } from './../types/artists.interface';
 import { Track } from '@prisma/client';
 import { Album } from './../types/albums.interface';
-import { IUser } from './../types/users.interface';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class InMemoryDB {
@@ -16,7 +16,7 @@ export class InMemoryDB {
   artists: Artist[] = [];
   albums: Album[] = [];
   tracks: Track[] = [];
-  users: IUser[] = [];
+  users: User[] = [];
 
   private static instance: Database;
 
