@@ -9,10 +9,10 @@ import {
   Get,
   Put,
 } from '@nestjs/common';
+import { Album } from '@prisma/client';
 import { AlbumsService } from './services/albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
-import { Album } from './../../types/albums.interface';
 
 @Controller('album')
 export class AlbumsController {

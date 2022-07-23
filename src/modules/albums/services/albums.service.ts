@@ -4,18 +4,18 @@ import {
   NotFoundException,
   Injectable,
 } from '@nestjs/common';
-import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
+import { validate as uuidValidate } from 'uuid';
+import { Album } from '@prisma/client';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreateAlbumDto } from './../dto/create-album.dto';
 import { UpdateAlbumDto } from './../dto/update-album.dto';
-import { Album } from './../../../types/albums.interface';
-import { InMemoryDB } from './../../../db/inMemoryDB';
 
 @Injectable()
 export class AlbumsService {
-  constructor(private inMemoryDB: InMemoryDB) {}
+  constructor(private prisma: PrismaService) {}
 
   async getAlbums(): Promise<Album[]> {
-    return this.inMemoryDB.albums;
+    return await this.prisma.album.findMany();
   }
 
   async getAlbum(albumId: string): Promise<Album> {
@@ -23,9 +23,11 @@ export class AlbumsService {
       throw new BadRequestException(`Album id ${albumId} invalid`);
     }
 
-    const album: Album = this.inMemoryDB.albums.find(
-      ({ id }: { id: string }) => id === albumId,
-    );
+    const album: Album = await this.prisma.album.findUnique({
+      where: {
+        id: albumId,
+      },
+    });
 
     if (!album) {
       throw new NotFoundException(`Album ${albumId} not found`);
@@ -37,9 +39,9 @@ export class AlbumsService {
   async createAlbum(createAlbumDto: CreateAlbumDto): Promise<Album> {
     if (createAlbumDto.artistId) {
       if (
-        !this.inMemoryDB.artists.find(
-          ({ id }: { id: string }) => id === createAlbumDto.artistId,
-        )
+        !(await this.prisma.artist.findUnique({
+          where: { id: createAlbumDto.artistId },
+        }))
       ) {
         throw new UnprocessableEntityException(
           `Artist ${createAlbumDto.artistId} not found`,
@@ -51,13 +53,9 @@ export class AlbumsService {
       throw new BadRequestException('Body does not contain required fields');
     }
 
-    const newAlbum: Album = {
-      ...createAlbumDto,
-      artistId: createAlbumDto.artistId || null,
-      id: uuidv4(),
-    };
-
-    this.inMemoryDB.albums.push(newAlbum);
+    const newAlbum: Album = await this.prisma.album.create({
+      data: { ...createAlbumDto },
+    });
 
     return newAlbum;
   }
@@ -70,17 +68,22 @@ export class AlbumsService {
       throw new BadRequestException(`Album id ${albumId} invalid`);
     }
 
-    const index: number = this.inMemoryDB.albums.findIndex(
-      ({ id }: { id: string }) => id === albumId,
-    );
+    const album: Album = await this.prisma.album.findUnique({
+      where: {
+        id: albumId,
+      },
+    });
 
-    if (index === -1) {
+    if (!album) {
       throw new NotFoundException(`Album ${albumId} not found`);
     }
 
-    const updateAlbum: Album = { ...updateAlbumDto, id: albumId };
-
-    this.inMemoryDB.albums[index] = updateAlbum;
+    const updateAlbum: Album = await this.prisma.album.update({
+      where: {
+        id: albumId,
+      },
+      data: { ...updateAlbumDto },
+    });
 
     return updateAlbum;
   }
@@ -90,31 +93,31 @@ export class AlbumsService {
       throw new BadRequestException(`Album id ${albumId} invalid`);
     }
 
-    if (
-      !this.inMemoryDB.albums.find(({ id }: { id: string }) => id === albumId)
-    ) {
-      throw new NotFoundException(`Album ${albumId} not found`);
+    if (!(await this.prisma.album.findUnique({ where: { id: albumId } }))) {
+      throw new NotFoundException(`Track ${albumId} not found`);
     }
 
-    this.inMemoryDB.albums = this.inMemoryDB.albums.filter(
-      ({ id }: { id: string }) => id !== albumId,
-    );
+    await this.prisma.album.delete({
+      where: {
+        id: albumId,
+      },
+    });
 
-    if (
-      this.inMemoryDB.favorites.albums.findIndex(
-        (id: string) => id === albumId,
-      ) !== -1
-    ) {
-      this.inMemoryDB.favorites.albums =
-        this.inMemoryDB.favorites.albums.filter((id: string) => id !== albumId);
-    }
+    // if (
+    //   this.inMemoryDB.favorites.albums.findIndex(
+    //     (id: string) => id === albumId,
+    //   ) !== -1
+    // ) {
+    //   this.inMemoryDB.favorites.albums =
+    //     this.inMemoryDB.favorites.albums.filter((id: string) => id !== albumId);
+    // }
 
-    const albumInTracks: number = this.inMemoryDB.tracks.findIndex(
-      ({ albumId: id }: { albumId: string }) => id === albumId,
-    );
+    // const albumInTracks: number = this.inMemoryDB.tracks.findIndex(
+    //   ({ albumId: id }: { albumId: string }) => id === albumId,
+    // );
 
-    if (albumInTracks !== -1) {
-      this.inMemoryDB.tracks[albumInTracks].albumId = null;
-    }
+    // if (albumInTracks !== -1) {
+    //   this.inMemoryDB.tracks[albumInTracks].albumId = null;
+    // }
   }
 }
