@@ -4,28 +4,31 @@ import {
   NotFoundException,
   Injectable,
 } from '@nestjs/common';
-import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
+import { validate as uuidValidate } from 'uuid';
+import { Track } from '@prisma/client';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTrackDto } from './../dto/create-track.dto';
 import { UpdateTrackDto } from './../dto/update-track.dto';
-import { Track } from './../../../types/tracks.interface';
-import { InMemoryDB } from './../../../db/inMemoryDB';
+import { ITrack } from './../../../types/tracks.interface';
 
 @Injectable()
 export class TracksService {
-  constructor(private inMemoryDB: InMemoryDB) {}
+  constructor(private prisma: PrismaService) {}
 
-  async getTracks(): Promise<Track[]> {
-    return this.inMemoryDB.tracks;
+  async getTracks(): Promise<ITrack[]> {
+    return await this.prisma.track.findMany();
   }
 
-  async getTrack(trackId: string): Promise<Track> {
+  async getTrack(trackId: string): Promise<ITrack> {
     if (!uuidValidate(trackId)) {
       throw new BadRequestException(`Track id ${trackId} invalid`);
     }
 
-    const track: Track = this.inMemoryDB.tracks.find(
-      ({ id }: { id: string }) => id === trackId,
-    );
+    const track: Track = await this.prisma.track.findUnique({
+      where: {
+        id: trackId,
+      },
+    });
 
     if (!track) {
       throw new NotFoundException(`Track ${trackId} not found`);
@@ -34,12 +37,12 @@ export class TracksService {
     return track;
   }
 
-  async createTrack(createTrackDto: CreateTrackDto): Promise<Track> {
+  async createTrack(createTrackDto: CreateTrackDto): Promise<ITrack> {
     if (createTrackDto.artistId) {
       if (
-        !this.inMemoryDB.artists.find(
-          ({ id }: { id: string }) => id === createTrackDto.artistId,
-        )
+        !(await this.prisma.artist.findUnique({
+          where: { id: createTrackDto.artistId },
+        }))
       ) {
         throw new UnprocessableEntityException(
           `Artist ${createTrackDto.artistId} not found`,
@@ -49,9 +52,9 @@ export class TracksService {
 
     if (createTrackDto.albumId) {
       if (
-        !this.inMemoryDB.albums.find(
-          ({ id }: { id: string }) => id === createTrackDto.albumId,
-        )
+        !(await this.prisma.album.findUnique({
+          where: { id: createTrackDto.albumId },
+        }))
       ) {
         throw new UnprocessableEntityException(
           `Album ${createTrackDto.albumId} not found`,
@@ -65,14 +68,9 @@ export class TracksService {
       throw new BadRequestException('Body does not contain required fields');
     }
 
-    const newTrack: Track = {
-      ...createTrackDto,
-      artistId: createTrackDto.artistId || null,
-      albumId: createTrackDto.albumId || null,
-      id: uuidv4(),
-    };
-
-    this.inMemoryDB.tracks.push(newTrack);
+    const newTrack: Track = await this.prisma.track.create({
+      data: { ...createTrackDto },
+    });
 
     return newTrack;
   }
@@ -80,22 +78,27 @@ export class TracksService {
   async updateTrack(
     trackId: string,
     updateTrackDto: UpdateTrackDto,
-  ): Promise<Track> {
+  ): Promise<ITrack> {
     if (!uuidValidate(trackId)) {
       throw new BadRequestException(`Track id ${trackId} invalid`);
     }
 
-    const index: number = this.inMemoryDB.tracks.findIndex(
-      ({ id }: { id: string }) => id === trackId,
-    );
+    const track: Track = await this.prisma.track.findUnique({
+      where: {
+        id: trackId,
+      },
+    });
 
-    if (index === -1) {
+    if (!track) {
       throw new NotFoundException(`Track ${trackId} not found`);
     }
 
-    const updateTrack: Track = { ...updateTrackDto, id: trackId };
-
-    this.inMemoryDB.tracks[index] = updateTrack;
+    const updateTrack: Track = await this.prisma.track.update({
+      where: {
+        id: trackId,
+      },
+      data: { ...updateTrackDto },
+    });
 
     return updateTrack;
   }
@@ -105,23 +108,29 @@ export class TracksService {
       throw new BadRequestException(`Track id ${trackId} invalid`);
     }
 
-    if (
-      !this.inMemoryDB.tracks.find(({ id }: { id: string }) => id === trackId)
-    ) {
+    if (!(await this.prisma.track.findUnique({ where: { id: trackId } }))) {
       throw new NotFoundException(`Track ${trackId} not found`);
     }
 
-    this.inMemoryDB.tracks = this.inMemoryDB.tracks.filter(
-      ({ id }: { id: string }) => id !== trackId,
-    );
+    await this.prisma.track.delete({
+      where: {
+        id: trackId,
+      },
+    });
 
-    if (
-      this.inMemoryDB.favorites.tracks.findIndex(
-        (id: string) => id === trackId,
-      ) !== -1
-    ) {
-      this.inMemoryDB.favorites.tracks =
-        this.inMemoryDB.favorites.tracks.filter((id: string) => id !== trackId);
-    }
+    // при удалении трека удалять его из фаворитов
+    // if (
+    //   this.inMemoryDB.favorites.tracks.findIndex(
+    //     (id: string) => id === trackId,
+    //   ) !== -1
+    // ) {
+    //   this.inMemoryDB.favorites.tracks =
+    //     this.inMemoryDB.favorites.tracks.filter((id: string) => id !== trackId);
+    // }
+
+    // const
+
+    //       await this.prisma.favorites.delete({
+    //       }
   }
 }

@@ -1,6 +1,6 @@
 import { Artist } from './artists.interface';
 import { Album } from './albums.interface';
-import { Track } from './tracks.interface';
+import { ITrack } from './tracks.interface';
 
 export interface Favorites {
   artists: string[];
@@ -11,5 +11,5 @@ export interface Favorites {
 export interface FavoritesRepsonse {
   artists: Artist[];
   albums: Album[];
-  tracks: Track[];
+  tracks: ITrack[];
 }

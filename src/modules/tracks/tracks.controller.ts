@@ -12,7 +12,7 @@ import {
 import { TracksService } from './services/tracks.service';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { CreateTrackDto } from './dto/create-track.dto';
-import { Track } from './../../types/tracks.interface';
+import { ITrack } from './../../types/tracks.interface';
 
 @Controller('track')
 export class TracksController {
@@ -20,19 +20,19 @@ export class TracksController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  getTracks(): Promise<Track[]> {
+  getTracks(): Promise<ITrack[]> {
     return this.tracksService.getTracks();
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  getTrack(@Param('id') id: string): Promise<Track> {
+  getTrack(@Param('id') id: string): Promise<ITrack> {
     return this.tracksService.getTrack(id);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  createTrack(@Body() createTrackDto: CreateTrackDto): Promise<Track> {
+  createTrack(@Body() createTrackDto: CreateTrackDto): Promise<ITrack> {
     return this.tracksService.createTrack(createTrackDto);
   }
 
@@ -41,7 +41,7 @@ export class TracksController {
   updateTrack(
     @Param('id') id: string,
     @Body() updateTrackDto: UpdateTrackDto,
-  ): Promise<Track> {
+  ): Promise<ITrack> {
     return this.tracksService.updateTrack(id, updateTrackDto);
   }
 
