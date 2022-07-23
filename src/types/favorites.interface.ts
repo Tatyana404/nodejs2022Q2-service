@@ -1,6 +1,6 @@
-import { Artist } from './artists.interface';
+import { IArtist } from './artists.interface';
 import { Album } from './albums.interface';
-import { ITrack } from './tracks.interface';
+import { Track } from '@prisma/client';
 
 export interface Favorites {
   artists: string[];
@@ -9,7 +9,7 @@ export interface Favorites {
 }
 
 export interface FavoritesRepsonse {
-  artists: Artist[];
+  artists: IArtist[];
   albums: Album[];
-  tracks: ITrack[];
+  tracks: Track[];
 }

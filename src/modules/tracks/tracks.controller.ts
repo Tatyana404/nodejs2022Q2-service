@@ -9,10 +9,10 @@ import {
   Get,
   Put,
 } from '@nestjs/common';
+import { Track } from '@prisma/client';
 import { TracksService } from './services/tracks.service';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { CreateTrackDto } from './dto/create-track.dto';
-import { ITrack } from './../../types/tracks.interface';
 
 @Controller('track')
 export class TracksController {
@@ -20,19 +20,19 @@ export class TracksController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  getTracks(): Promise<ITrack[]> {
+  getTracks(): Promise<Track[]> {
     return this.tracksService.getTracks();
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  getTrack(@Param('id') id: string): Promise<ITrack> {
+  getTrack(@Param('id') id: string): Promise<Track> {
     return this.tracksService.getTrack(id);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  createTrack(@Body() createTrackDto: CreateTrackDto): Promise<ITrack> {
+  createTrack(@Body() createTrackDto: CreateTrackDto): Promise<Track> {
     return this.tracksService.createTrack(createTrackDto);
   }
 
@@ -41,7 +41,7 @@ export class TracksController {
   updateTrack(
     @Param('id') id: string,
     @Body() updateTrackDto: UpdateTrackDto,
-  ): Promise<ITrack> {
+  ): Promise<Track> {
     return this.tracksService.updateTrack(id, updateTrackDto);
   }
 

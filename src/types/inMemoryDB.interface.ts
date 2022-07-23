@@ -1,13 +1,13 @@
 import { Favorites } from './favorites.interface';
-import { Artist } from './artists.interface';
+import { IArtist } from './artists.interface';
 import { Album } from './albums.interface';
-import { ITrack } from './tracks.interface';
+import { Track } from '@prisma/client';
 import { IUser } from './users.interface';
 
 export interface Database {
   favorites: Favorites;
-  artists: Artist[];
-  tracks: ITrack[];
+  artists: IArtist[];
+  tracks: Track[];
   albums: Album[];
   users: IUser[];
 }

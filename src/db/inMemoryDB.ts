@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Favorites } from './../types/favorites.interface';
 import { Database } from './../types/inMemoryDB.interface';
 import { Artist } from './../types/artists.interface';
-import { ITrack } from './../types/tracks.interface';
+import { Track } from '@prisma/client';
 import { Album } from './../types/albums.interface';
 import { IUser } from './../types/users.interface';
 
@@ -15,7 +15,7 @@ export class InMemoryDB {
   };
   artists: Artist[] = [];
   albums: Album[] = [];
-  tracks: ITrack[] = [];
+  tracks: Track[] = [];
   users: IUser[] = [];
 
   private static instance: Database;

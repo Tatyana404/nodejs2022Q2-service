@@ -9,17 +9,16 @@ import { Track } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTrackDto } from './../dto/create-track.dto';
 import { UpdateTrackDto } from './../dto/update-track.dto';
-import { ITrack } from './../../../types/tracks.interface';
 
 @Injectable()
 export class TracksService {
   constructor(private prisma: PrismaService) {}
 
-  async getTracks(): Promise<ITrack[]> {
+  async getTracks(): Promise<Track[]> {
     return await this.prisma.track.findMany();
   }
 
-  async getTrack(trackId: string): Promise<ITrack> {
+  async getTrack(trackId: string): Promise<Track> {
     if (!uuidValidate(trackId)) {
       throw new BadRequestException(`Track id ${trackId} invalid`);
     }
@@ -37,7 +36,7 @@ export class TracksService {
     return track;
   }
 
-  async createTrack(createTrackDto: CreateTrackDto): Promise<ITrack> {
+  async createTrack(createTrackDto: CreateTrackDto): Promise<Track> {
     if (createTrackDto.artistId) {
       if (
         !(await this.prisma.artist.findUnique({
@@ -78,7 +77,7 @@ export class TracksService {
   async updateTrack(
     trackId: string,
     updateTrackDto: UpdateTrackDto,
-  ): Promise<ITrack> {
+  ): Promise<Track> {
     if (!uuidValidate(trackId)) {
       throw new BadRequestException(`Track id ${trackId} invalid`);
     }
