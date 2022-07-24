@@ -8,11 +8,9 @@ RUN npm install
 
 COPY . .
 
-COPY .env.example .env
+RUN npx prisma generate && npm run build 
 
-RUN npm run build && npx prisma generate
-
-CMD ["npm", "run", "start:dev"]
+CMD npx prisma migrate deploy && npm run start:dev
 
 
 
