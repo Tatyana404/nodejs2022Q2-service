@@ -12,6 +12,14 @@
 
 6. run "npm run scan:images" to check vulnerabilities in images (command may take several minutes to complete);
 
+After checking the first part of the task:
+
+1. run "git checkout postgreSQL-ORM";
+
+2. run "npm install";
+
+3. run "docker compose up --build";
+
 > The following requests are available in the application:
 
 ## Users
@@ -25,7 +33,7 @@
 }; 
 * PUT /user/:id - update user's password:
 {
-  oldPassowrd: string;
+  oldPassword: string;
   newPassword: string;
 };
 * DELETE /user/:id - delete user;
