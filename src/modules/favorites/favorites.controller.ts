@@ -7,7 +7,6 @@ import {
   Post,
   Get,
 } from '@nestjs/common';
-import { FavoritesRepsonse } from './../../types/favorites.interface';
 import { FavoritesService } from './services/favorites.service';
 
 @Controller('favs')
@@ -16,7 +15,7 @@ export class FavoritesController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  getFavorites(): Promise<FavoritesRepsonse> {
+  getFavorites() {
     return this.favoritesService.getFavorites();
   }
 
