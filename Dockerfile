@@ -8,9 +8,9 @@ RUN npm install
 
 COPY . .
 
-RUN npx prisma generate && npm run build 
+RUN npx prisma generate && npm run build
 
-CMD npx prisma migrate deploy && npm run start:dev
+CMD npx prisma migrate deploy && npx prisma generate && npm run start:dev
 
 
 
