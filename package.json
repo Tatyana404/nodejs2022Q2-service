@@ -14,11 +14,14 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest --config ./test/jest-e2e.json",
+    "test": "jest --config ./test/jest-e2e.json --verbose",
     "test:auth": "cross-env TEST_MODE=auth jest --config ./test/jest-e2e.json",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "scan:app": "docker scan nodejs2022q2-service_app",
+    "scan:postgres": "docker scan nodejs2022q2-service_postgres",
+    "scan:images": "concurrently \"npm run scan:app\" \"npm run scan:postgres\""
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
@@ -26,6 +29,7 @@
     "@nestjs/jwt": "^9.0.0",
     "@nestjs/mapped-types": "^1.0.1",
     "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/swagger": "^5.2.1",
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
@@ -34,7 +38,9 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "uuid": "^8.3.2"
+    "swagger-ui-express": "^4.4.0",
+    "uuid": "^8.3.2",
+    "yaml": "^2.1.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
@@ -49,6 +55,7 @@
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
+    "concurrently": "^7.3.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
