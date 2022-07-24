@@ -102,22 +102,5 @@ export class AlbumsService {
         id: albumId,
       },
     });
-
-    // if (
-    //   this.inMemoryDB.favorites.albums.findIndex(
-    //     (id: string) => id === albumId,
-    //   ) !== -1
-    // ) {
-    //   this.inMemoryDB.favorites.albums =
-    //     this.inMemoryDB.favorites.albums.filter((id: string) => id !== albumId);
-    // }
-
-    // const albumInTracks: number = this.inMemoryDB.tracks.findIndex(
-    //   ({ albumId: id }: { albumId: string }) => id === albumId,
-    // );
-
-    // if (albumInTracks !== -1) {
-    //   this.inMemoryDB.tracks[albumInTracks].albumId = null;
-    // }
   }
 }

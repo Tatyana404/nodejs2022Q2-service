@@ -116,20 +116,5 @@ export class TracksService {
         id: trackId,
       },
     });
-
-    // при удалении трека удалять его из фаворитов
-    // if (
-    //   this.inMemoryDB.favorites.tracks.findIndex(
-    //     (id: string) => id === trackId,
-    //   ) !== -1
-    // ) {
-    //   this.inMemoryDB.favorites.tracks =
-    //     this.inMemoryDB.favorites.tracks.filter((id: string) => id !== trackId);
-    // }
-
-    // const
-
-    //       await this.prisma.favorites.delete({
-    //       }
   }
 }

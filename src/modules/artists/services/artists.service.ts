@@ -91,50 +91,5 @@ export class ArtistsService {
         id: artistId,
       },
     });
-
-    //   if (
-    //     this.inMemoryDB.favorites.artists.findIndex(
-    //       (id: string) => id === artistId,
-    //     ) !== -1
-    //   ) {
-    //     this.inMemoryDB.favorites.artists =
-    //       this.inMemoryDB.favorites.artists.filter(
-    //         (id: string) => id !== artistId,
-    //       );
-    //   }
-
-    // if (
-    //   await this.prisma.album.findMany({
-    //     where: {
-    //       artistId,
-    //     },
-    //   })
-    // ) {
-    //   await this.prisma.album.updateMany({
-    //     where: {
-    //       id: artistId,
-    //     },
-    //     data: {
-    //       artistId: { set: null },
-    //     },
-    //   });
-    // }
-
-    // if (
-    //   await this.prisma.track.findMany({
-    //     where: {
-    //       artistId,
-    //     },
-    //   })
-    // ) {
-    //   await this.prisma.track.updateMany({
-    //     where: {
-    //       id: artistId,
-    //     },
-    //     data: {
-    //       artistId: { set: null },
-    //     },
-    //   });
-    // }
   }
 }
