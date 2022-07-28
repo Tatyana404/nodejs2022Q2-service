@@ -1,9 +1,17 @@
-import { Controller, HttpStatus, HttpCode, Body, Post } from '@nestjs/common';
+import {
+  Controller,
+  HttpStatus,
+  UseGuards,
+  HttpCode,
+  Body,
+  Post,
+} from '@nestjs/common';
 import { UsersService } from './../users/services/users.service';
+import { Jwt, RefreshToken } from './../../types/jwt.interface';
 import { CreateUserDto } from './../users/dto/create-user.dto';
 import { UserResponse } from '../../types/users.interface';
 import { AuthService } from './services/auth.service';
-import { Jwt } from './../../types/jwt.interface';
+import { JwtGward } from './guard/jwt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -22,5 +30,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   loginUser(@Body() createUserDto: CreateUserDto): Promise<Jwt> {
     return this.authService.loginUser(createUserDto);
+  }
+
+  @UseGuards(JwtGward)
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  refreshUser(@Body() refreshToken: RefreshToken): Promise<Jwt> {
+    return this.authService.refreshUser(refreshToken);
   }
 }
