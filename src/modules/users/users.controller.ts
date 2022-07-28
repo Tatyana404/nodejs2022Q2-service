@@ -1,6 +1,7 @@
 import {
   Controller,
   HttpStatus,
+  UseGuards,
   HttpCode,
   Delete,
   Param,
@@ -13,7 +14,9 @@ import { UserResponse } from '../../types/users.interface';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { UsersService } from './services/users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { JwtGward } from './../auth/guard/jwt.guard';
 
+@UseGuards(JwtGward)
 @Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

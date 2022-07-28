@@ -1,6 +1,7 @@
 import {
   Controller,
   HttpStatus,
+  UseGuards,
   HttpCode,
   Delete,
   Param,
@@ -13,7 +14,9 @@ import { Album } from '@prisma/client';
 import { AlbumsService } from './services/albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
+import { JwtGward } from './../auth/guard/jwt.guard';
 
+@UseGuards(JwtGward)
 @Controller('album')
 export class AlbumsController {
   constructor(private readonly albumsService: AlbumsService) {}

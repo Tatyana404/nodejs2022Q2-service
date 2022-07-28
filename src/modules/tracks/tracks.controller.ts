@@ -1,6 +1,7 @@
 import {
   Controller,
   HttpStatus,
+  UseGuards,
   HttpCode,
   Delete,
   Param,
@@ -13,7 +14,9 @@ import { Track } from '@prisma/client';
 import { TracksService } from './services/tracks.service';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { CreateTrackDto } from './dto/create-track.dto';
+import { JwtGward } from './../auth/guard/jwt.guard';
 
+@UseGuards(JwtGward)
 @Controller('track')
 export class TracksController {
   constructor(private readonly tracksService: TracksService) {}

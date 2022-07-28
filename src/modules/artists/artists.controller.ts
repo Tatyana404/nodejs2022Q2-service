@@ -1,6 +1,7 @@
 import {
   Controller,
   HttpStatus,
+  UseGuards,
   HttpCode,
   Delete,
   Param,
@@ -13,7 +14,9 @@ import { Artist } from '@prisma/client';
 import { ArtistsService } from './services/artists.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
+import { JwtGward } from './../auth/guard/jwt.guard';
 
+@UseGuards(JwtGward)
 @Controller('artist')
 export class ArtistsController {
   constructor(private readonly artistsService: ArtistsService) {}
