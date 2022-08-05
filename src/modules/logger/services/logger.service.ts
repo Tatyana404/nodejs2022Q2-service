@@ -1,4 +1,4 @@
-import { LoggerService, Logger } from '@nestjs/common';
+import { LoggerService } from '@nestjs/common';
 
 enum LoggingLevels {
   debug = 0,
@@ -10,7 +10,6 @@ enum LoggingLevels {
 
 export class CustomLogger implements LoggerService {
   private readonly levelLog: number;
-  private logger = new Logger();
 
   constructor(level: number) {
     this.levelLog = level;
@@ -18,31 +17,31 @@ export class CustomLogger implements LoggerService {
 
   debug?(message: string) {
     if (this.levelLog === LoggingLevels['debug']) {
-      this.logger.debug(message);
+      console.debug(message);
     }
   }
 
   verbose?(message: string) {
     if (this.levelLog === LoggingLevels['verbose']) {
-      this.logger.verbose(message);
+      console.log(message);
     }
   }
 
   log(message: string) {
     if (this.levelLog === LoggingLevels['log']) {
-      this.logger.log(message);
+      console.log(message);
     }
   }
 
   warn(message: string) {
     if (this.levelLog === LoggingLevels['warn']) {
-      this.logger.warn(message);
+      console.warn(message);
     }
   }
 
   error(message: string) {
     if (this.levelLog === LoggingLevels['error']) {
-      this.logger.error(message);
+      console.error(message);
     }
   }
 }
