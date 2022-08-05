@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { validate as uuidValidate } from 'uuid';
 import { Artist } from '@prisma/client';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from './../../prisma/services/prisma.service';
 import { UpdateArtistDto } from './../dto/update-artist.dto';
 import { CreateArtistDto } from './../dto/create-artist.dto';
 

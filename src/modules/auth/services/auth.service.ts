@@ -9,8 +9,8 @@ import { User } from '@prisma/client';
 import * as argon from 'argon2';
 import 'dotenv/config';
 import { Jwt, Payload, RefreshToken } from './../../../types/jwt.interface';
+import { PrismaService } from './../../prisma/services/prisma.service';
 import { CreateUserDto } from './../../users/dto/create-user.dto';
-import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class AuthService {

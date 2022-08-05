@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { validate as uuidValidate } from 'uuid';
 import { Favorites } from '@prisma/client';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from './../../prisma/services/prisma.service';
 
 @Injectable()
 export class FavoritesService {

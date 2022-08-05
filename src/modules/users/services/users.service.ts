@@ -7,9 +7,9 @@ import {
 import { validate as uuidValidate } from 'uuid';
 import { User } from '@prisma/client';
 import * as argon from 'argon2';
+import { PrismaService } from './../../prisma/services/prisma.service';
 import { UserResponse } from './../../../types/users.interface';
 import { UpdatePasswordDto } from './../dto/update-user.dto';
-import { PrismaService } from '../../prisma/prisma.service';
 import { CreateUserDto } from './../dto/create-user.dto';
 
 @Injectable()
