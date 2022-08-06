@@ -1,4 +1,5 @@
-import { LoggerService } from '@nestjs/common';
+import { ConsoleLogger } from '@nestjs/common';
+import 'dotenv/config';
 
 enum LoggingLevels {
   debug = 0,
@@ -8,33 +9,52 @@ enum LoggingLevels {
   error = 4,
 }
 
-export class CustomLogger implements LoggerService {
+export class CustomLogger extends ConsoleLogger {
   private readonly levelLog: number;
 
-  constructor(level: number) {
-    this.levelLog = level;
+  constructor() {
+    super();
+    this.levelLog = parseInt(process.env.LOGGING_LEVEL as string, 10) || 4;
   }
 
-  debug?(message: string) {
-    if (this.levelLog === LoggingLevels['debug']) {
+  debug(message: string) {
+    if (
+      this.levelLog === LoggingLevels['error'] ||
+      this.levelLog === LoggingLevels['warn'] ||
+      this.levelLog === LoggingLevels['log'] ||
+      this.levelLog === LoggingLevels['verbose'] ||
+      this.levelLog === LoggingLevels['debug']
+    ) {
       console.debug(message);
     }
   }
 
-  verbose?(message: string) {
-    if (this.levelLog === LoggingLevels['verbose']) {
+  verbose(message: string) {
+    if (
+      this.levelLog === LoggingLevels['error'] ||
+      this.levelLog === LoggingLevels['warn'] ||
+      this.levelLog === LoggingLevels['log'] ||
+      this.levelLog === LoggingLevels['verbose']
+    ) {
       console.log(message);
     }
   }
 
   log(message: string) {
-    if (this.levelLog === LoggingLevels['log']) {
+    if (
+      this.levelLog === LoggingLevels['error'] ||
+      this.levelLog === LoggingLevels['warn'] ||
+      this.levelLog === LoggingLevels['log']
+    ) {
       console.log(message);
     }
   }
 
   warn(message: string) {
-    if (this.levelLog === LoggingLevels['warn']) {
+    if (
+      this.levelLog === LoggingLevels['error'] ||
+      this.levelLog === LoggingLevels['warn']
+    ) {
       console.warn(message);
     }
   }
