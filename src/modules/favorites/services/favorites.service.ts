@@ -3,16 +3,20 @@ import {
   BadRequestException,
   NotFoundException,
   Injectable,
+  HttpStatus,
 } from '@nestjs/common';
 import { validate as uuidValidate } from 'uuid';
 import { Favorites } from '@prisma/client';
 import { PrismaService } from './../../prisma/services/prisma.service';
+import { CustomLogger } from './../../logger/services/logger.service';
 
 @Injectable()
 export class FavoritesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private logger: CustomLogger) {}
 
   async getFavorites() {
+    this.logger.debug('getFavorites getting started');
+
     const favorites = await this.prisma.favorites.findMany({
       select: {
         artists: { select: { id: true, name: true, grammy: true } },
@@ -33,6 +37,7 @@ export class FavoritesService {
 
     const _ = favorites[0];
 
+    this.logger.debug('getFavorites completion work');
     return {
       artists: favorites.length && _.artists ? _.artists : [],
       albums: favorites.length && _.albums ? _.albums : [],
@@ -41,7 +46,12 @@ export class FavoritesService {
   }
 
   async addArtistToFavorites(artistId: string): Promise<void> {
+    this.logger.debug('addArtistToFavorites getting started');
+
     if (!uuidValidate(artistId)) {
+      this.logger.error(
+        `${HttpStatus.BAD_REQUEST} Artist id ${artistId} invalid`,
+      );
       throw new BadRequestException(`Artist id ${artistId} invalid`);
     }
 
@@ -50,6 +60,9 @@ export class FavoritesService {
         where: { id: artistId },
       }))
     ) {
+      this.logger.error(
+        `${HttpStatus.UNPROCESSABLE_ENTITY} Artist ${artistId} not found`,
+      );
       throw new UnprocessableEntityException(`Artist ${artistId} not found`);
     }
 
@@ -69,11 +82,17 @@ export class FavoritesService {
       });
     }
 
+    this.logger.debug('addArtistToFavorites completion work');
     return;
   }
 
   async removeArtistFromFavorites(artistId: string): Promise<void> {
+    this.logger.debug('removeArtistFromFavorites getting started');
+
     if (!uuidValidate(artistId)) {
+      this.logger.error(
+        `${HttpStatus.BAD_REQUEST} Artist id ${artistId} invalid`,
+      );
       throw new BadRequestException(`Artist id ${artistId} invalid`);
     }
 
@@ -82,6 +101,7 @@ export class FavoritesService {
         where: { id: artistId },
       }))
     ) {
+      this.logger.error(`${HttpStatus.NOT_FOUND} Artist ${artistId} not found`);
       throw new NotFoundException(`Artist ${artistId} not found`);
     }
 
@@ -90,11 +110,17 @@ export class FavoritesService {
       data: { favoriteId: { set: null } },
     });
 
+    this.logger.debug('removeArtistFromFavorites completion work');
     return;
   }
 
   async addAlbumToFavorites(albumId: string): Promise<void> {
+    this.logger.debug('addAlbumToFavorites getting started');
+
     if (!uuidValidate(albumId)) {
+      this.logger.error(
+        `${HttpStatus.BAD_REQUEST} Album id ${albumId} invalid`,
+      );
       throw new BadRequestException(`Album id ${albumId} invalid`);
     }
 
@@ -103,6 +129,9 @@ export class FavoritesService {
         where: { id: albumId },
       }))
     ) {
+      this.logger.error(
+        `${HttpStatus.UNPROCESSABLE_ENTITY} Album ${albumId} not found`,
+      );
       throw new UnprocessableEntityException(`Album ${albumId} not found`);
     }
 
@@ -122,11 +151,17 @@ export class FavoritesService {
       });
     }
 
+    this.logger.debug('addAlbumToFavorites completion work');
     return;
   }
 
   async removeAlbumFromFavorites(albumId: string): Promise<void> {
+    this.logger.debug('removeAlbumFromFavorites getting started');
+
     if (!uuidValidate(albumId)) {
+      this.logger.error(
+        `${HttpStatus.BAD_REQUEST} Album id ${albumId} invalid`,
+      );
       throw new BadRequestException(`Album id ${albumId} invalid`);
     }
 
@@ -135,6 +170,7 @@ export class FavoritesService {
         where: { id: albumId },
       }))
     ) {
+      this.logger.error(`${HttpStatus.NOT_FOUND} Album ${albumId} not found`);
       throw new NotFoundException(`Album ${albumId} not found`);
     }
 
@@ -143,11 +179,17 @@ export class FavoritesService {
       data: { favoriteId: { set: null } },
     });
 
+    this.logger.debug('removeAlbumFromFavorites completion work');
     return;
   }
 
   async addTrackToFavorites(trackId: string): Promise<void> {
+    this.logger.debug('addTrackToFavorites getting started');
+
     if (!uuidValidate(trackId)) {
+      this.logger.error(
+        `${HttpStatus.BAD_REQUEST} Track id ${trackId} invalid`,
+      );
       throw new BadRequestException(`Track id ${trackId} invalid`);
     }
 
@@ -156,6 +198,9 @@ export class FavoritesService {
         where: { id: trackId },
       }))
     ) {
+      this.logger.error(
+        `${HttpStatus.UNPROCESSABLE_ENTITY} Track ${trackId} not found`,
+      );
       throw new UnprocessableEntityException(`Track ${trackId} not found`);
     }
 
@@ -175,11 +220,17 @@ export class FavoritesService {
       });
     }
 
+    this.logger.debug('addTrackToFavorites completion work');
     return;
   }
 
   async removeTrackFromFavorites(trackId: string): Promise<void> {
+    this.logger.debug('removeTrackFromFavorites getting started');
+
     if (!uuidValidate(trackId)) {
+      this.logger.error(
+        `${HttpStatus.BAD_REQUEST} Track id ${trackId} invalid`,
+      );
       throw new BadRequestException(`Track id ${trackId} invalid`);
     }
 
@@ -188,6 +239,7 @@ export class FavoritesService {
         where: { id: trackId },
       }))
     ) {
+      this.logger.error(`${HttpStatus.NOT_FOUND} Track ${trackId} not found`);
       throw new NotFoundException(`Track ${trackId} not found`);
     }
 
@@ -196,6 +248,7 @@ export class FavoritesService {
       data: { favoriteId: { set: null } },
     });
 
+    this.logger.debug('removeTrackFromFavorites completion work');
     return;
   }
 }
