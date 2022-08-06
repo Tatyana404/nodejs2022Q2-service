@@ -1,0 +1,10 @@
+docker-compose.yml
+src/db/Dockerfile
+.dockerignore
+.env.example
+node_modules
+.gitignore
+Dockerfile
+README.md
+dist
+.git
