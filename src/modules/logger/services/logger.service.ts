@@ -22,10 +22,16 @@ export class CustomLogger extends ConsoleLogger {
     super.setContext(context);
 
     if (existsSync('logs')) {
-      appendFileSync(`logs/${fileName}.log`, `${message} \n`);
+      appendFileSync(
+        `logs/${fileName}.log`,
+        `timestamp: ${new Date().toLocaleString()}, ${message} \n`,
+      );
     } else {
       mkdirSync('logs');
-      appendFileSync(`logs/${fileName}.log`, `${message} \n`);
+      appendFileSync(
+        `logs/${fileName}.log`,
+        `timestamp: ${new Date().toLocaleString()}, ${message} \n`,
+      );
     }
   }
 
