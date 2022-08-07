@@ -1,21 +1,19 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { CustomLogger } from './../services/logger.service';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-  constructor(private logger: CustomLogger) {}
-
   use(req: Request, res: Response, next: NextFunction): void {
-    const { method, baseUrl, url, body } = req;
+    const { method, baseUrl, query, body } = req;
 
     res.on('finish', () => {
       const { statusCode } = res;
 
-      this.logger.log(
-        `${new Date().toLocaleString()} ${method} ${baseUrl} ${url} ${JSON.stringify(
-          body,
-        )} ${statusCode}`,
+      Logger.log(
+        'HTTP',
+        `status code: ${statusCode}, method: ${method}, url: ${baseUrl}, query parameters: ${JSON.stringify(
+          query,
+        )}, body: ${JSON.stringify(body)}`,
       );
     });
 
