@@ -1,3 +1,4 @@
+import { existsSync, mkdirSync, appendFileSync } from 'fs';
 import { ConsoleLogger } from '@nestjs/common';
 import 'dotenv/config';
 
@@ -17,7 +18,18 @@ export class CustomLogger extends ConsoleLogger {
     this.levelLog = parseInt(process.env.LOGGING_LEVEL as string, 10) || 4;
   }
 
-  debug(message: string) {
+  writingToFile(context: string, message: string, fileName: string) {
+    super.setContext(context);
+
+    if (existsSync('logs')) {
+      appendFileSync(`logs/${fileName}.log`, `${message} \n`);
+    } else {
+      mkdirSync('logs');
+      appendFileSync(`logs/${fileName}.log`, `${message} \n`);
+    }
+  }
+
+  debug(context: string, message: string) {
     if (
       this.levelLog === LoggingLevels['error'] ||
       this.levelLog === LoggingLevels['warn'] ||
@@ -25,43 +37,48 @@ export class CustomLogger extends ConsoleLogger {
       this.levelLog === LoggingLevels['verbose'] ||
       this.levelLog === LoggingLevels['debug']
     ) {
-      console.debug(message);
+      super.debug(message);
+      this.writingToFile(context, message, 'debug');
     }
   }
 
-  verbose(message: string) {
+  verbose(context: string, message: string) {
     if (
       this.levelLog === LoggingLevels['error'] ||
       this.levelLog === LoggingLevels['warn'] ||
       this.levelLog === LoggingLevels['log'] ||
       this.levelLog === LoggingLevels['verbose']
     ) {
-      console.log(message);
+      super.verbose(message);
+      this.writingToFile(context, message, 'verbose');
     }
   }
 
-  log(message: string) {
+  log(context: string, message: string) {
     if (
       this.levelLog === LoggingLevels['error'] ||
       this.levelLog === LoggingLevels['warn'] ||
       this.levelLog === LoggingLevels['log']
     ) {
-      console.log(message);
+      super.log(message);
+      this.writingToFile(context, message, 'log');
     }
   }
 
-  warn(message: string) {
+  warn(context: string, message: string) {
     if (
       this.levelLog === LoggingLevels['error'] ||
       this.levelLog === LoggingLevels['warn']
     ) {
-      console.warn(message);
+      super.warn(message);
+      this.writingToFile(context, message, 'warn');
     }
   }
 
-  error(message: string) {
+  error(context: string, message: string) {
     if (this.levelLog === LoggingLevels['error']) {
-      console.error(message);
+      super.error(message);
+      this.writingToFile(context, message, 'error');
     }
   }
 }
