@@ -23,7 +23,7 @@ export class TracksService {
   }
 
   async getTrack(trackId: string): Promise<Track> {
-    Logger.debug('getTrack getting started');
+    Logger.debug(TracksService.name, 'getTrack getting started');
 
     if (!uuidValidate(trackId)) {
       Logger.error(

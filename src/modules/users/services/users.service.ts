@@ -44,7 +44,9 @@ export class UsersService {
     Logger.debug(UsersService.name, 'getUser getting started');
 
     if (!uuidValidate(userId)) {
-      Logger.error(`${HttpStatus.BAD_REQUEST} User id ${userId} invalid`);
+      Logger.error(
+        `${UsersService.name} ${HttpStatus.BAD_REQUEST} User id ${userId} invalid`,
+      );
       throw new BadRequestException(`User id ${userId} invalid`);
     }
 
