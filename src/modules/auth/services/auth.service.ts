@@ -25,7 +25,8 @@ export class AuthService {
       !['login', 'password'].every((field: string) => field in createUserDto)
     ) {
       Logger.error(
-        `${AuthService.name} ${HttpStatus.BAD_REQUEST} Body does not contain required fields`,
+        AuthService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Body does not contain required fields`,
       );
       throw new BadRequestException('Body does not contain required fields');
     }
@@ -38,7 +39,8 @@ export class AuthService {
 
     if (!user || !(await argon.verify(user.password, createUserDto.password))) {
       Logger.error(
-        `${AuthService.name} ${HttpStatus.FORBIDDEN} Authentication failed`,
+        AuthService.name,
+        `status code: ${HttpStatus.FORBIDDEN}, error message: Authentication failed`,
       );
       throw new ForbiddenException('Authentication failed');
     }
@@ -69,7 +71,8 @@ export class AuthService {
       !refreshToken.refreshToken.length
     ) {
       Logger.error(
-        `${AuthService.name} ${HttpStatus.UNAUTHORIZED} Body does not contain required fields`,
+        AuthService.name,
+        `status code: ${HttpStatus.UNAUTHORIZED}, error message: Body does not contain required fields`,
       );
       throw new UnauthorizedException('Body does not contain required fields');
     }
@@ -101,7 +104,8 @@ export class AuthService {
       };
     } catch {
       Logger.error(
-        `${AuthService.name} ${HttpStatus.FORBIDDEN} Refresh token is invalid or expired`,
+        AuthService.name,
+        `status code: ${HttpStatus.FORBIDDEN}, error message: Refresh token is invalid or expired`,
       );
       throw new ForbiddenException('Refresh token is invalid or expired');
     }

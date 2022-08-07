@@ -27,7 +27,8 @@ export class TracksService {
 
     if (!uuidValidate(trackId)) {
       Logger.error(
-        `${TracksService.name} ${HttpStatus.BAD_REQUEST} Track id ${trackId} invalid`,
+        TracksService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Track id ${trackId} invalid`,
       );
       throw new BadRequestException(`Track id ${trackId} invalid`);
     }
@@ -40,7 +41,8 @@ export class TracksService {
 
     if (!track) {
       Logger.error(
-        `${TracksService.name} ${HttpStatus.NOT_FOUND} Track ${trackId} not found`,
+        TracksService.name,
+        `status code: ${HttpStatus.NOT_FOUND}, error message: Track ${trackId} not found`,
       );
       throw new NotFoundException(`Track ${trackId} not found`);
     }
@@ -59,7 +61,8 @@ export class TracksService {
         }))
       ) {
         Logger.error(
-          `${TracksService.name} ${HttpStatus.UNPROCESSABLE_ENTITY} Artist ${createTrackDto.artistId} not found`,
+          TracksService.name,
+          `status code: ${HttpStatus.UNPROCESSABLE_ENTITY}, error message: Artist ${createTrackDto.artistId} not found`,
         );
         throw new UnprocessableEntityException(
           `Artist ${createTrackDto.artistId} not found`,
@@ -74,7 +77,8 @@ export class TracksService {
         }))
       ) {
         Logger.error(
-          `${TracksService.name} ${HttpStatus.UNPROCESSABLE_ENTITY} Artist ${createTrackDto.artistId} not found`,
+          TracksService.name,
+          `status code: ${HttpStatus.UNPROCESSABLE_ENTITY}, error message: Artist ${createTrackDto.artistId} not found`,
         );
         throw new UnprocessableEntityException(
           `Album ${createTrackDto.albumId} not found`,
@@ -86,7 +90,8 @@ export class TracksService {
       !['name', 'duration'].every((field: string) => field in createTrackDto)
     ) {
       Logger.error(
-        `${TracksService.name} ${HttpStatus.BAD_REQUEST} Body does not contain required fields`,
+        TracksService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Body does not contain required fields`,
       );
       throw new BadRequestException('Body does not contain required fields');
     }
@@ -107,7 +112,8 @@ export class TracksService {
 
     if (!uuidValidate(trackId)) {
       Logger.error(
-        `${TracksService.name} ${HttpStatus.BAD_REQUEST} Track id ${trackId} invalid`,
+        TracksService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Track id ${trackId} invalid`,
       );
       throw new BadRequestException(`Track id ${trackId} invalid`);
     }
@@ -120,7 +126,8 @@ export class TracksService {
 
     if (!track) {
       Logger.error(
-        `${TracksService.name} ${HttpStatus.NOT_FOUND} Track ${trackId} not found`,
+        TracksService.name,
+        `status code: ${HttpStatus.NOT_FOUND}, error message: Track ${trackId} not found`,
       );
       throw new NotFoundException(`Track ${trackId} not found`);
     }
@@ -141,14 +148,16 @@ export class TracksService {
 
     if (!uuidValidate(trackId)) {
       Logger.error(
-        `${TracksService.name} ${HttpStatus.BAD_REQUEST} Track id ${trackId} invalid`,
+        TracksService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Track id ${trackId} invalid`,
       );
       throw new BadRequestException(`Track id ${trackId} invalid`);
     }
 
     if (!(await this.prisma.track.findUnique({ where: { id: trackId } }))) {
       Logger.error(
-        `${TracksService.name} ${HttpStatus.NOT_FOUND} Track ${trackId} not found`,
+        TracksService.name,
+        `status code: ${HttpStatus.NOT_FOUND}, error message: Track ${trackId} not found`,
       );
       throw new NotFoundException(`Track ${trackId} not found`);
     }

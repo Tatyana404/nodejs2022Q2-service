@@ -27,7 +27,8 @@ export class AlbumsService {
 
     if (!uuidValidate(albumId)) {
       Logger.error(
-        `${AlbumsService.name} ${HttpStatus.BAD_REQUEST} Album id ${albumId} invalid`,
+        AlbumsService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Album id ${albumId} invalid`,
       );
       throw new BadRequestException(`Album id ${albumId} invalid`);
     }
@@ -40,7 +41,8 @@ export class AlbumsService {
 
     if (!album) {
       Logger.error(
-        `${AlbumsService.name} ${HttpStatus.NOT_FOUND} Album ${albumId} not found`,
+        AlbumsService.name,
+        `status code: ${HttpStatus.NOT_FOUND}, error message: Album ${albumId} not found`,
       );
       throw new NotFoundException(`Album ${albumId} not found`);
     }
@@ -59,7 +61,8 @@ export class AlbumsService {
         }))
       ) {
         Logger.error(
-          `${AlbumsService.name} ${HttpStatus.UNPROCESSABLE_ENTITY} Artist ${createAlbumDto.artistId} not found`,
+          AlbumsService.name,
+          `status code: ${HttpStatus.UNPROCESSABLE_ENTITY}, error message: Artist ${createAlbumDto.artistId} not found`,
         );
         throw new UnprocessableEntityException(
           `Artist ${createAlbumDto.artistId} not found`,
@@ -69,7 +72,8 @@ export class AlbumsService {
 
     if (!['name', 'year'].every((field: string) => field in createAlbumDto)) {
       Logger.error(
-        `${AlbumsService.name} ${HttpStatus.BAD_REQUEST} Body does not contain required fields`,
+        AlbumsService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Body does not contain required fields`,
       );
       throw new BadRequestException('Body does not contain required fields');
     }
@@ -90,7 +94,8 @@ export class AlbumsService {
 
     if (!uuidValidate(albumId)) {
       Logger.error(
-        `${AlbumsService.name} ${HttpStatus.BAD_REQUEST} Album id ${albumId} invalid`,
+        AlbumsService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Album id ${albumId} invalid`,
       );
       throw new BadRequestException(`Album id ${albumId} invalid`);
     }
@@ -103,7 +108,8 @@ export class AlbumsService {
 
     if (!album) {
       Logger.error(
-        `${AlbumsService.name} ${HttpStatus.NOT_FOUND} Album ${albumId} not found`,
+        AlbumsService.name,
+        `status code: ${HttpStatus.NOT_FOUND}, error message: Album ${albumId} not found`,
       );
       throw new NotFoundException(`Album ${albumId} not found`);
     }
@@ -124,14 +130,16 @@ export class AlbumsService {
 
     if (!uuidValidate(albumId)) {
       Logger.error(
-        `${AlbumsService.name} ${HttpStatus.BAD_REQUEST} Album id ${albumId} invalid`,
+        AlbumsService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Album id ${albumId} invalid`,
       );
       throw new BadRequestException(`Album id ${albumId} invalid`);
     }
 
     if (!(await this.prisma.album.findUnique({ where: { id: albumId } }))) {
       Logger.error(
-        `${AlbumsService.name} ${HttpStatus.NOT_FOUND} Track ${albumId} not found`,
+        AlbumsService.name,
+        `status code: ${HttpStatus.NOT_FOUND}, error message: Track ${albumId} not found`,
       );
       throw new NotFoundException(`Track ${albumId} not found`);
     }

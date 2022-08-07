@@ -50,7 +50,8 @@ export class FavoritesService {
 
     if (!uuidValidate(artistId)) {
       Logger.error(
-        `${FavoritesService.name} ${HttpStatus.BAD_REQUEST} Artist id ${artistId} invalid`,
+        FavoritesService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Artist id ${artistId} invalid`,
       );
       throw new BadRequestException(`Artist id ${artistId} invalid`);
     }
@@ -61,7 +62,8 @@ export class FavoritesService {
       }))
     ) {
       Logger.error(
-        `${FavoritesService.name} ${HttpStatus.UNPROCESSABLE_ENTITY} Artist ${artistId} not found`,
+        FavoritesService.name,
+        `status code: ${HttpStatus.UNPROCESSABLE_ENTITY}, error message: Artist ${artistId} not found`,
       );
       throw new UnprocessableEntityException(`Artist ${artistId} not found`);
     }
@@ -94,7 +96,8 @@ export class FavoritesService {
 
     if (!uuidValidate(artistId)) {
       Logger.error(
-        `${FavoritesService.name} ${HttpStatus.BAD_REQUEST} Artist id ${artistId} invalid`,
+        FavoritesService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Artist id ${artistId} invalid`,
       );
       throw new BadRequestException(`Artist id ${artistId} invalid`);
     }
@@ -105,7 +108,8 @@ export class FavoritesService {
       }))
     ) {
       Logger.error(
-        `${FavoritesService.name} ${HttpStatus.NOT_FOUND} Artist ${artistId} not found`,
+        FavoritesService.name,
+        `status code: ${HttpStatus.NOT_FOUND}, error message: Artist ${artistId} not found`,
       );
       throw new NotFoundException(`Artist ${artistId} not found`);
     }
@@ -127,7 +131,8 @@ export class FavoritesService {
 
     if (!uuidValidate(albumId)) {
       Logger.error(
-        `${FavoritesService.name} ${HttpStatus.BAD_REQUEST} Album id ${albumId} invalid`,
+        FavoritesService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Album id ${albumId} invalid`,
       );
       throw new BadRequestException(`Album id ${albumId} invalid`);
     }
@@ -138,7 +143,8 @@ export class FavoritesService {
       }))
     ) {
       Logger.error(
-        `${FavoritesService.name} ${HttpStatus.UNPROCESSABLE_ENTITY} Album ${albumId} not found`,
+        FavoritesService.name,
+        `status code: ${HttpStatus.UNPROCESSABLE_ENTITY}, error message: Album ${albumId} not found`,
       );
       throw new UnprocessableEntityException(`Album ${albumId} not found`);
     }
@@ -171,7 +177,8 @@ export class FavoritesService {
 
     if (!uuidValidate(albumId)) {
       Logger.error(
-        `${FavoritesService.name} ${HttpStatus.BAD_REQUEST} Album id ${albumId} invalid`,
+        FavoritesService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Album id ${albumId} invalid`,
       );
       throw new BadRequestException(`Album id ${albumId} invalid`);
     }
@@ -182,7 +189,8 @@ export class FavoritesService {
       }))
     ) {
       Logger.error(
-        `${FavoritesService.name} ${HttpStatus.NOT_FOUND} Album ${albumId} not found`,
+        FavoritesService.name,
+        `status code: ${HttpStatus.NOT_FOUND}, error message: Album ${albumId} not found`,
       );
       throw new NotFoundException(`Album ${albumId} not found`);
     }
@@ -204,7 +212,8 @@ export class FavoritesService {
 
     if (!uuidValidate(trackId)) {
       Logger.error(
-        `${FavoritesService.name} ${HttpStatus.BAD_REQUEST} Track id ${trackId} invalid`,
+        FavoritesService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Track id ${trackId} invalid`,
       );
       throw new BadRequestException(`Track id ${trackId} invalid`);
     }
@@ -215,7 +224,8 @@ export class FavoritesService {
       }))
     ) {
       Logger.error(
-        `${FavoritesService.name} ${HttpStatus.UNPROCESSABLE_ENTITY} Track ${trackId} not found`,
+        FavoritesService.name,
+        `status code: ${HttpStatus.UNPROCESSABLE_ENTITY}, error message: Track ${trackId} not found`,
       );
       throw new UnprocessableEntityException(`Track ${trackId} not found`);
     }
@@ -248,7 +258,8 @@ export class FavoritesService {
 
     if (!uuidValidate(trackId)) {
       Logger.error(
-        `${FavoritesService.name} ${HttpStatus.BAD_REQUEST} Track id ${trackId} invalid`,
+        FavoritesService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Track id ${trackId} invalid`,
       );
       throw new BadRequestException(`Track id ${trackId} invalid`);
     }
@@ -259,7 +270,8 @@ export class FavoritesService {
       }))
     ) {
       Logger.error(
-        `${FavoritesService.name} ${HttpStatus.NOT_FOUND} Track ${trackId} not found`,
+        FavoritesService.name,
+        `status code: ${HttpStatus.NOT_FOUND}, error message: Track ${trackId} not found`,
       );
       throw new NotFoundException(`Track ${trackId} not found`);
     }

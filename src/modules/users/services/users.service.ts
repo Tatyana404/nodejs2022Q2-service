@@ -45,7 +45,8 @@ export class UsersService {
 
     if (!uuidValidate(userId)) {
       Logger.error(
-        `${UsersService.name} ${HttpStatus.BAD_REQUEST} User id ${userId} invalid`,
+        UsersService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: User id ${userId} invalid`,
       );
       throw new BadRequestException(`User id ${userId} invalid`);
     }
@@ -58,7 +59,8 @@ export class UsersService {
 
     if (!user) {
       Logger.error(
-        `${UsersService.name} ${HttpStatus.NOT_FOUND} User ${userId} not found`,
+        UsersService.name,
+        `status code: ${HttpStatus.NOT_FOUND}, error message: User ${userId} not found`,
       );
       throw new NotFoundException(`User ${userId} not found`);
     }
@@ -78,7 +80,8 @@ export class UsersService {
       !['login', 'password'].every((field: string) => field in createUserDto)
     ) {
       Logger.error(
-        `${UsersService.name} ${HttpStatus.BAD_REQUEST} Body does not contain required fields`,
+        UsersService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Body does not contain required fields`,
       );
       throw new BadRequestException('Body does not contain required fields');
     }
@@ -106,7 +109,8 @@ export class UsersService {
 
     if (!uuidValidate(userId)) {
       Logger.error(
-        `${UsersService.name} ${HttpStatus.BAD_REQUEST} User id ${userId} invalid`,
+        UsersService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: User id ${userId} invalid`,
       );
       throw new BadRequestException(`User id ${userId} invalid`);
     }
@@ -119,14 +123,16 @@ export class UsersService {
 
     if (!user) {
       Logger.error(
-        `${UsersService.name} ${HttpStatus.NOT_FOUND} User ${userId} not found`,
+        UsersService.name,
+        `status code: ${HttpStatus.NOT_FOUND}, error message: User ${userId} not found`,
       );
       throw new NotFoundException(`User ${userId} not found`);
     }
 
     if (!(await argon.verify(user.password, updatePasswordDto.oldPassword))) {
       Logger.error(
-        `${UsersService.name} ${HttpStatus.FORBIDDEN} Old password is not correct`,
+        UsersService.name,
+        `status code: ${HttpStatus.FORBIDDEN}, error message: Old password is not correct`,
       );
       throw new ForbiddenException('Old password is not correct');
     }
@@ -157,14 +163,16 @@ export class UsersService {
 
     if (!uuidValidate(userId)) {
       Logger.error(
-        `${UsersService.name} ${HttpStatus.BAD_REQUEST} User id ${userId} invalid`,
+        UsersService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: User id ${userId} invalid`,
       );
       throw new BadRequestException(`User id ${userId} invalid`);
     }
 
     if (!(await this.prisma.user.findUnique({ where: { id: userId } }))) {
       Logger.error(
-        `${UsersService.name} ${HttpStatus.NOT_FOUND} User ${userId} not found`,
+        UsersService.name,
+        `status code: ${HttpStatus.NOT_FOUND}, error message: User ${userId} not found`,
       );
       throw new NotFoundException(`User ${userId} not found`);
     }

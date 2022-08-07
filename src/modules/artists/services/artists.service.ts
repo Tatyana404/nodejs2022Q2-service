@@ -26,7 +26,8 @@ export class ArtistsService {
 
     if (!uuidValidate(artistId)) {
       Logger.error(
-        `${ArtistsService.name} ${HttpStatus.BAD_REQUEST} Artist id ${artistId} invalid`,
+        ArtistsService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Artist id ${artistId} invalid`,
       );
       throw new BadRequestException(`Artist id ${artistId} invalid`);
     }
@@ -39,7 +40,8 @@ export class ArtistsService {
 
     if (!artist) {
       Logger.error(
-        `${ArtistsService.name} ${HttpStatus.NOT_FOUND} Artist ${artistId} not found`,
+        ArtistsService.name,
+        `status code: ${HttpStatus.NOT_FOUND}, error message: Artist ${artistId} not found`,
       );
       throw new NotFoundException(`Artist ${artistId} not found`);
     }
@@ -55,7 +57,8 @@ export class ArtistsService {
       !['name', 'grammy'].every((field: string) => field in createArtistDto)
     ) {
       Logger.error(
-        `${ArtistsService.name} ${HttpStatus.BAD_REQUEST} Body does not contain required fields`,
+        ArtistsService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Body does not contain required fields`,
       );
       throw new BadRequestException('Body does not contain required fields');
     }
@@ -76,7 +79,8 @@ export class ArtistsService {
 
     if (!uuidValidate(artistId)) {
       Logger.error(
-        `${ArtistsService.name} ${HttpStatus.BAD_REQUEST} Artist id ${artistId} invalid`,
+        ArtistsService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Artist id ${artistId} invalid`,
       );
       throw new BadRequestException(`Artist id ${artistId} invalid`);
     }
@@ -89,7 +93,8 @@ export class ArtistsService {
 
     if (!artist) {
       Logger.error(
-        `${ArtistsService.name} ${HttpStatus.NOT_FOUND} Artist ${artistId} not found`,
+        ArtistsService.name,
+        `status code: ${HttpStatus.NOT_FOUND}, error message: Artist ${artistId} not found`,
       );
       throw new NotFoundException(`Artist ${artistId} not found`);
     }
@@ -110,14 +115,16 @@ export class ArtistsService {
 
     if (!uuidValidate(artistId)) {
       Logger.error(
-        `${ArtistsService.name} ${HttpStatus.BAD_REQUEST} Artist id ${artistId} invalid`,
+        ArtistsService.name,
+        `status code: ${HttpStatus.BAD_REQUEST}, error message: Artist id ${artistId} invalid`,
       );
       throw new BadRequestException(`Artist id ${artistId} invalid`);
     }
 
     if (!(await this.prisma.artist.findUnique({ where: { id: artistId } }))) {
       Logger.error(
-        `${ArtistsService.name} ${HttpStatus.NOT_FOUND} Artist ${artistId} not found`,
+        ArtistsService.name,
+        `status code: ${HttpStatus.NOT_FOUND}, error message: Artist ${artistId} not found`,
       );
       throw new NotFoundException(`Artist ${artistId} not found`);
     }
