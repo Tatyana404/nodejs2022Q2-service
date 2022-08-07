@@ -4,30 +4,30 @@ import {
   NotFoundException,
   Injectable,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { validate as uuidValidate } from 'uuid';
 import { Album } from '@prisma/client';
 import { PrismaService } from './../../prisma/services/prisma.service';
-import { CustomLogger } from './../../logger/services/logger.service';
 import { CreateAlbumDto } from './../dto/create-album.dto';
 import { UpdateAlbumDto } from './../dto/update-album.dto';
 
 @Injectable()
 export class AlbumsService {
-  constructor(private prisma: PrismaService, private logger: CustomLogger) {}
+  constructor(private prisma: PrismaService) {}
 
   async getAlbums(): Promise<Album[]> {
-    this.logger.debug('getAlbums getting started');
-    this.logger.debug('getAlbums completion work');
+    Logger.debug(AlbumsService.name, 'getAlbums getting started');
+    Logger.debug(AlbumsService.name, 'getAlbums completion work');
     return await this.prisma.album.findMany();
   }
 
   async getAlbum(albumId: string): Promise<Album> {
-    this.logger.debug('getAlbum getting started');
+    Logger.debug(AlbumsService.name, 'getAlbum getting started');
 
     if (!uuidValidate(albumId)) {
-      this.logger.error(
-        `${HttpStatus.BAD_REQUEST} Album id ${albumId} invalid`,
+      Logger.error(
+        `${AlbumsService.name} ${HttpStatus.BAD_REQUEST} Album id ${albumId} invalid`,
       );
       throw new BadRequestException(`Album id ${albumId} invalid`);
     }
@@ -39,16 +39,18 @@ export class AlbumsService {
     });
 
     if (!album) {
-      this.logger.error(`${HttpStatus.NOT_FOUND} Album ${albumId} not found`);
+      Logger.error(
+        `${AlbumsService.name} ${HttpStatus.NOT_FOUND} Album ${albumId} not found`,
+      );
       throw new NotFoundException(`Album ${albumId} not found`);
     }
 
-    this.logger.debug('getAlbum completion work');
+    Logger.debug(AlbumsService.name, 'getAlbum completion work');
     return album;
   }
 
   async createAlbum(createAlbumDto: CreateAlbumDto): Promise<Album> {
-    this.logger.debug('createAlbum getting started');
+    Logger.debug(AlbumsService.name, 'createAlbum getting started');
 
     if (createAlbumDto.artistId) {
       if (
@@ -56,8 +58,8 @@ export class AlbumsService {
           where: { id: createAlbumDto.artistId },
         }))
       ) {
-        this.logger.error(
-          `${HttpStatus.UNPROCESSABLE_ENTITY} Artist ${createAlbumDto.artistId} not found`,
+        Logger.error(
+          `${AlbumsService.name} ${HttpStatus.UNPROCESSABLE_ENTITY} Artist ${createAlbumDto.artistId} not found`,
         );
         throw new UnprocessableEntityException(
           `Artist ${createAlbumDto.artistId} not found`,
@@ -66,8 +68,8 @@ export class AlbumsService {
     }
 
     if (!['name', 'year'].every((field: string) => field in createAlbumDto)) {
-      this.logger.error(
-        `${HttpStatus.BAD_REQUEST} Body does not contain required fields`,
+      Logger.error(
+        `${AlbumsService.name} ${HttpStatus.BAD_REQUEST} Body does not contain required fields`,
       );
       throw new BadRequestException('Body does not contain required fields');
     }
@@ -76,7 +78,7 @@ export class AlbumsService {
       data: { ...createAlbumDto },
     });
 
-    this.logger.debug('createAlbum completion work');
+    Logger.debug(AlbumsService.name, 'createAlbum completion work');
     return newAlbum;
   }
 
@@ -84,11 +86,11 @@ export class AlbumsService {
     albumId: string,
     updateAlbumDto: UpdateAlbumDto,
   ): Promise<Album> {
-    this.logger.debug('updateAlbum getting started');
+    Logger.debug(AlbumsService.name, 'updateAlbum getting started');
 
     if (!uuidValidate(albumId)) {
-      this.logger.error(
-        `${HttpStatus.BAD_REQUEST} Album id ${albumId} invalid`,
+      Logger.error(
+        `${AlbumsService.name} ${HttpStatus.BAD_REQUEST} Album id ${albumId} invalid`,
       );
       throw new BadRequestException(`Album id ${albumId} invalid`);
     }
@@ -100,7 +102,9 @@ export class AlbumsService {
     });
 
     if (!album) {
-      this.logger.error(`${HttpStatus.NOT_FOUND} Album ${albumId} not found`);
+      Logger.error(
+        `${AlbumsService.name} ${HttpStatus.NOT_FOUND} Album ${albumId} not found`,
+      );
       throw new NotFoundException(`Album ${albumId} not found`);
     }
 
@@ -111,22 +115,24 @@ export class AlbumsService {
       data: { ...updateAlbumDto },
     });
 
-    this.logger.debug('updateAlbum completion work');
+    Logger.debug(AlbumsService.name, 'updateAlbum completion work');
     return updateAlbum;
   }
 
   async deleteAlbum(albumId: string): Promise<void> {
-    this.logger.debug('deleteAlbum getting started');
+    Logger.debug(AlbumsService.name, 'deleteAlbum getting started');
 
     if (!uuidValidate(albumId)) {
-      this.logger.error(
-        `${HttpStatus.BAD_REQUEST} Album id ${albumId} invalid`,
+      Logger.error(
+        `${AlbumsService.name} ${HttpStatus.BAD_REQUEST} Album id ${albumId} invalid`,
       );
       throw new BadRequestException(`Album id ${albumId} invalid`);
     }
 
     if (!(await this.prisma.album.findUnique({ where: { id: albumId } }))) {
-      this.logger.error(`${HttpStatus.NOT_FOUND} Track ${albumId} not found`);
+      Logger.error(
+        `${AlbumsService.name} ${HttpStatus.NOT_FOUND} Track ${albumId} not found`,
+      );
       throw new NotFoundException(`Track ${albumId} not found`);
     }
 
@@ -136,6 +142,6 @@ export class AlbumsService {
       },
     });
 
-    this.logger.debug('deleteAlbum completion work');
+    Logger.debug(AlbumsService.name, 'deleteAlbum completion work');
   }
 }
