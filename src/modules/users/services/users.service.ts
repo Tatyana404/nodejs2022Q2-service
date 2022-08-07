@@ -4,22 +4,22 @@ import {
   NotFoundException,
   Injectable,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { validate as uuidValidate } from 'uuid';
 import { User } from '@prisma/client';
 import * as argon from 'argon2';
 import { PrismaService } from './../../prisma/services/prisma.service';
-import { CustomLogger } from './../../logger/services/logger.service';
 import { UserResponse } from './../../../types/users.interface';
 import { UpdatePasswordDto } from './../dto/update-user.dto';
 import { CreateUserDto } from './../dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService, private logger: CustomLogger) {}
+  constructor(private prisma: PrismaService) {}
 
   async getUsers(): Promise<UserResponse[]> {
-    this.logger.debug('getUsers getting started');
+    Logger.debug(UsersService.name, 'getUsers getting started');
 
     const users: UserResponse[] = await this.prisma.user.findMany({
       select: {
@@ -36,15 +36,15 @@ export class UsersService {
       user.updatedAt = new Date(user.updatedAt).getTime() as any;
     }
 
-    this.logger.debug('getUsers completion work');
+    Logger.debug(UsersService.name, 'getUsers completion work');
     return users;
   }
 
   async getUser(userId: string): Promise<UserResponse> {
-    this.logger.debug('getUser getting started');
+    Logger.debug(UsersService.name, 'getUser getting started');
 
     if (!uuidValidate(userId)) {
-      this.logger.error(`${HttpStatus.BAD_REQUEST} User id ${userId} invalid`);
+      Logger.error(`${HttpStatus.BAD_REQUEST} User id ${userId} invalid`);
       throw new BadRequestException(`User id ${userId} invalid`);
     }
 
@@ -55,7 +55,9 @@ export class UsersService {
     });
 
     if (!user) {
-      this.logger.error(`${HttpStatus.NOT_FOUND} User ${userId} not found`);
+      Logger.error(
+        `${UsersService.name} ${HttpStatus.NOT_FOUND} User ${userId} not found`,
+      );
       throw new NotFoundException(`User ${userId} not found`);
     }
 
@@ -63,18 +65,18 @@ export class UsersService {
     user.updatedAt = new Date(user.updatedAt).getTime() as any;
     delete user.password;
 
-    this.logger.debug('getUser completion work');
+    Logger.debug(UsersService.name, 'getUser completion work');
     return user;
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<UserResponse> {
-    this.logger.debug('createUser getting started');
+    Logger.debug(UsersService.name, 'createUser getting started');
 
     if (
       !['login', 'password'].every((field: string) => field in createUserDto)
     ) {
-      this.logger.error(
-        `${HttpStatus.BAD_REQUEST} Body does not contain required fields`,
+      Logger.error(
+        `${UsersService.name} ${HttpStatus.BAD_REQUEST} Body does not contain required fields`,
       );
       throw new BadRequestException('Body does not contain required fields');
     }
@@ -90,7 +92,7 @@ export class UsersService {
     newUser.updatedAt = new Date(newUser.updatedAt).getTime() as any;
     delete newUser.password;
 
-    this.logger.debug('createUser completion work');
+    Logger.debug(UsersService.name, 'createUser completion work');
     return newUser;
   }
 
@@ -98,10 +100,12 @@ export class UsersService {
     userId: string,
     updatePasswordDto: UpdatePasswordDto,
   ): Promise<UserResponse> {
-    this.logger.debug('updateUser getting started');
+    Logger.debug(UsersService.name, 'updateUser getting started');
 
     if (!uuidValidate(userId)) {
-      this.logger.error(`${HttpStatus.BAD_REQUEST} User id ${userId} invalid`);
+      Logger.error(
+        `${UsersService.name} ${HttpStatus.BAD_REQUEST} User id ${userId} invalid`,
+      );
       throw new BadRequestException(`User id ${userId} invalid`);
     }
 
@@ -112,12 +116,16 @@ export class UsersService {
     });
 
     if (!user) {
-      this.logger.error(`${HttpStatus.NOT_FOUND} User ${userId} not found`);
+      Logger.error(
+        `${UsersService.name} ${HttpStatus.NOT_FOUND} User ${userId} not found`,
+      );
       throw new NotFoundException(`User ${userId} not found`);
     }
 
     if (!(await argon.verify(user.password, updatePasswordDto.oldPassword))) {
-      this.logger.error(`${HttpStatus.FORBIDDEN} Old password is not correct`);
+      Logger.error(
+        `${UsersService.name} ${HttpStatus.FORBIDDEN} Old password is not correct`,
+      );
       throw new ForbiddenException('Old password is not correct');
     }
 
@@ -138,20 +146,24 @@ export class UsersService {
     updateUser.updatedAt = new Date(updateUser.updatedAt).getTime() as any;
     delete updateUser.password;
 
-    this.logger.debug('updateUser completion work');
+    Logger.debug(UsersService.name, 'updateUser completion work');
     return updateUser;
   }
 
   async deleteUser(userId: string): Promise<void> {
-    this.logger.debug('deleteUser getting started');
+    Logger.debug(UsersService.name, 'deleteUser getting started');
 
     if (!uuidValidate(userId)) {
-      this.logger.error(`${HttpStatus.BAD_REQUEST} User id ${userId} invalid`);
+      Logger.error(
+        `${UsersService.name} ${HttpStatus.BAD_REQUEST} User id ${userId} invalid`,
+      );
       throw new BadRequestException(`User id ${userId} invalid`);
     }
 
     if (!(await this.prisma.user.findUnique({ where: { id: userId } }))) {
-      this.logger.error(`${HttpStatus.NOT_FOUND} User ${userId} not found`);
+      Logger.error(
+        `${UsersService.name} ${HttpStatus.NOT_FOUND} User ${userId} not found`,
+      );
       throw new NotFoundException(`User ${userId} not found`);
     }
 
@@ -161,6 +173,6 @@ export class UsersService {
       },
     });
 
-    this.logger.debug('deleteUser completion work');
+    Logger.debug(UsersService.name, 'deleteUser completion work');
   }
 }
