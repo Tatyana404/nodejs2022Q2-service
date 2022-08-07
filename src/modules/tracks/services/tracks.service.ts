@@ -4,30 +4,30 @@ import {
   NotFoundException,
   Injectable,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { validate as uuidValidate } from 'uuid';
 import { Track } from '@prisma/client';
 import { PrismaService } from './../../prisma/services/prisma.service';
-import { CustomLogger } from './../../logger/services/logger.service';
 import { CreateTrackDto } from './../dto/create-track.dto';
 import { UpdateTrackDto } from './../dto/update-track.dto';
 
 @Injectable()
 export class TracksService {
-  constructor(private prisma: PrismaService, private logger: CustomLogger) {}
+  constructor(private prisma: PrismaService) {}
 
   async getTracks(): Promise<Track[]> {
-    this.logger.debug('getTracks getting started');
-    this.logger.debug('getTracks completion work');
+    Logger.debug(TracksService.name, 'getTracks getting started');
+    Logger.debug(TracksService.name, 'getTracks completion work');
     return await this.prisma.track.findMany();
   }
 
   async getTrack(trackId: string): Promise<Track> {
-    this.logger.debug('getTrack getting started');
+    Logger.debug('getTrack getting started');
 
     if (!uuidValidate(trackId)) {
-      this.logger.error(
-        `${HttpStatus.BAD_REQUEST} Track id ${trackId} invalid`,
+      Logger.error(
+        `${TracksService.name} ${HttpStatus.BAD_REQUEST} Track id ${trackId} invalid`,
       );
       throw new BadRequestException(`Track id ${trackId} invalid`);
     }
@@ -39,16 +39,18 @@ export class TracksService {
     });
 
     if (!track) {
-      this.logger.error(`${HttpStatus.NOT_FOUND} Track ${trackId} not found`);
+      Logger.error(
+        `${TracksService.name} ${HttpStatus.NOT_FOUND} Track ${trackId} not found`,
+      );
       throw new NotFoundException(`Track ${trackId} not found`);
     }
 
-    this.logger.debug('getTrack completion work');
+    Logger.debug(TracksService.name, 'getTrack completion work');
     return track;
   }
 
   async createTrack(createTrackDto: CreateTrackDto): Promise<Track> {
-    this.logger.debug('createTrack getting started');
+    Logger.debug(TracksService.name, 'createTrack getting started');
 
     if (createTrackDto.artistId) {
       if (
@@ -56,8 +58,8 @@ export class TracksService {
           where: { id: createTrackDto.artistId },
         }))
       ) {
-        this.logger.error(
-          `${HttpStatus.UNPROCESSABLE_ENTITY} Artist ${createTrackDto.artistId} not found`,
+        Logger.error(
+          `${TracksService.name} ${HttpStatus.UNPROCESSABLE_ENTITY} Artist ${createTrackDto.artistId} not found`,
         );
         throw new UnprocessableEntityException(
           `Artist ${createTrackDto.artistId} not found`,
@@ -71,8 +73,8 @@ export class TracksService {
           where: { id: createTrackDto.albumId },
         }))
       ) {
-        this.logger.error(
-          `${HttpStatus.UNPROCESSABLE_ENTITY} Artist ${createTrackDto.artistId} not found`,
+        Logger.error(
+          `${TracksService.name} ${HttpStatus.UNPROCESSABLE_ENTITY} Artist ${createTrackDto.artistId} not found`,
         );
         throw new UnprocessableEntityException(
           `Album ${createTrackDto.albumId} not found`,
@@ -83,8 +85,8 @@ export class TracksService {
     if (
       !['name', 'duration'].every((field: string) => field in createTrackDto)
     ) {
-      this.logger.error(
-        `${HttpStatus.BAD_REQUEST} Body does not contain required fields`,
+      Logger.error(
+        `${TracksService.name} ${HttpStatus.BAD_REQUEST} Body does not contain required fields`,
       );
       throw new BadRequestException('Body does not contain required fields');
     }
@@ -93,7 +95,7 @@ export class TracksService {
       data: { ...createTrackDto },
     });
 
-    this.logger.debug('createTrack completion work');
+    Logger.debug(TracksService.name, 'createTrack completion work');
     return newTrack;
   }
 
@@ -101,11 +103,11 @@ export class TracksService {
     trackId: string,
     updateTrackDto: UpdateTrackDto,
   ): Promise<Track> {
-    this.logger.debug('updateTrack getting started');
+    Logger.debug(TracksService.name, 'updateTrack getting started');
 
     if (!uuidValidate(trackId)) {
-      this.logger.error(
-        `${HttpStatus.BAD_REQUEST} Track id ${trackId} invalid`,
+      Logger.error(
+        `${TracksService.name} ${HttpStatus.BAD_REQUEST} Track id ${trackId} invalid`,
       );
       throw new BadRequestException(`Track id ${trackId} invalid`);
     }
@@ -117,7 +119,9 @@ export class TracksService {
     });
 
     if (!track) {
-      this.logger.error(`${HttpStatus.NOT_FOUND} Track ${trackId} not found`);
+      Logger.error(
+        `${TracksService.name} ${HttpStatus.NOT_FOUND} Track ${trackId} not found`,
+      );
       throw new NotFoundException(`Track ${trackId} not found`);
     }
 
@@ -128,22 +132,24 @@ export class TracksService {
       data: { ...updateTrackDto },
     });
 
-    this.logger.debug('updateTrack completion work');
+    Logger.debug(TracksService.name, 'updateTrack completion work');
     return updateTrack;
   }
 
   async deleteTrack(trackId: string): Promise<void> {
-    this.logger.debug('deleteTrack getting started');
+    Logger.debug(TracksService.name, 'deleteTrack getting started');
 
     if (!uuidValidate(trackId)) {
-      this.logger.error(
-        `${HttpStatus.BAD_REQUEST} Track id ${trackId} invalid`,
+      Logger.error(
+        `${TracksService.name} ${HttpStatus.BAD_REQUEST} Track id ${trackId} invalid`,
       );
       throw new BadRequestException(`Track id ${trackId} invalid`);
     }
 
     if (!(await this.prisma.track.findUnique({ where: { id: trackId } }))) {
-      this.logger.error(`${HttpStatus.NOT_FOUND} Track ${trackId} not found`);
+      Logger.error(
+        `${TracksService.name} ${HttpStatus.NOT_FOUND} Track ${trackId} not found`,
+      );
       throw new NotFoundException(`Track ${trackId} not found`);
     }
 
@@ -153,6 +159,6 @@ export class TracksService {
       },
     });
 
-    this.logger.debug('deleteTrack completion work');
+    Logger.debug(TracksService.name, 'deleteTrack completion work');
   }
 }
