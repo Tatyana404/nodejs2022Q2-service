@@ -5,6 +5,7 @@ import { readFile } from 'fs/promises';
 import { dirname, join } from 'path';
 import { parse } from 'yaml';
 import 'dotenv/config';
+import { CustomLogger } from './modules/logger/services/logger.service';
 import { AppModule } from './app.module';
 
 const PORT: number = parseInt(process.env.PORT as string, 10) || 4000;
@@ -28,6 +29,8 @@ const bootstrap = async () => {
       forbidUnknownValues: true,
     }),
   );
+
+  app.useLogger(new CustomLogger());
 
   await app.listen(PORT, () => console.log(`🚀  Server ready on port ${PORT}`));
 };
